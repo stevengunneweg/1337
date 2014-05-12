@@ -1,0 +1,55 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+	<script type="text/javascript">
+		function send() {
+			var date = new Date();
+			console.log(date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds());
+		}
+	</script>
+	
+	<style type="text/css">
+		html, body {
+			margin: 0px;
+			padding: 0px;
+			width: 100%;
+			height: 100%;
+			font-family: arial, helvetica;
+		}
+		#button {
+			position: absolute;
+			top: calc(50% - 75px);
+			left: calc(50% - 150px);
+			text-align: center;
+		}
+			#button button {
+				width: 300px;
+				height: 150px;
+				font-size: 70px;
+			}
+		.score {
+			position: relative;
+			width: 300px;
+			height: 100%;
+			padding-left: 20px;
+			padding-right: 20px;
+			background: green;
+		}
+		#today {
+			float: left;
+			text-align: left;
+		}
+		#yesterday {
+			float: right;
+			text-align: right;
+		}
+	</style>
+</head>
+<body>
+	<div class="score" id="today"><h1>Today</h1></div>
+	<div class="score" id="yesterday"><h1>Yesterday</h1></div>
+	<div id="button">
+		<button onclick="send()">1337</button>
+	</div>
+</body>
+</html>
