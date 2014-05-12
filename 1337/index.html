@@ -2,9 +2,27 @@
 <html>
 <head>
 	<script type="text/javascript">
+		window.onload = function() {
+		}
 		function send() {
-			var date = new Date();
-			console.log(date.getHours() + ':' + date.getMinutes() + ':' + date.getSeconds() + ':' + date.getMilliseconds());
+			if (!document.getElementById('name_field').value) {
+				alert('fill in a name!\nHURRRYYY!!');
+				document.getElementById('name_field').focus();
+			} else {
+				console.log('send name:' + document.getElementById('name_field').value);
+				//TODO: database uses timestamp now
+			}
+			addToList('table_today', document.getElementById('name_field').value, new Date().toString());
+		}
+		function addToList(table_id_name, name, timestamp) {
+			var table = document.getElementById(table_id_name);
+			var row = table.insertRow(-1);
+			var cell_score = row.insertCell();
+			var cell_name = row.insertCell();
+			cell_score.className = 'score';
+			cell_name.className = 'name';
+			cell_name.innerHTML = name;
+			cell_score.innerHTML = timestamp;
 		}
 	</script>
 	
@@ -16,6 +34,16 @@
 			height: 100%;
 			font-family: arial, helvetica;
 		}
+		#name {
+			position: absolute;
+			top: calc(40% - 75px);
+			left: calc(50% - 150px);
+			text-align: center;
+		}
+			#name input {
+				width: 300px;
+				font-size: 50px;
+			}
 		#button {
 			position: absolute;
 			top: calc(50% - 75px);
@@ -27,27 +55,42 @@
 				height: 150px;
 				font-size: 70px;
 			}
-		.score {
+		.score_field {
 			position: relative;
 			width: 300px;
 			height: 100%;
 			padding-left: 20px;
 			padding-right: 20px;
-			background: green;
+			border-right: 1px solid #ccc;
+			text-align: center;
 		}
+			.score_field table {
+				width: 100%;
+			}
+				.score_field table .name {
+					text-align: left;
+				}
+				.score_field table .score {
+					text-align: right;
+				}
 		#today {
 			float: left;
-			text-align: left;
 		}
 		#yesterday {
 			float: right;
-			text-align: right;
 		}
 	</style>
 </head>
 <body>
-	<div class="score" id="today"><h1>Today</h1></div>
-	<div class="score" id="yesterday"><h1>Yesterday</h1></div>
+	<div class="score_field" id="today">
+		<h1>Today</h1>
+		<table id="table_today">
+		</table>
+	</div>
+
+	<div id="name">
+		<input id="name_field" placeholder="name"></input>
+	</div>
 	<div id="button">
 		<button onclick="send()">1337</button>
 	</div>
