@@ -1,4 +1,7 @@
 1337
 ====
 
-A competition page for the 1337 time
+A competition game for the 1337 time
+
+
+Click the button on exactly 13:37 before everyone else.
