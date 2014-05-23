@@ -38,6 +38,18 @@
 			var date = new Date();
 			document.getElementById(target).innerHTML = 'Week ' + getWeekNumber(date);
 		}
+		function printMonth(target) {
+			var date = new Date();
+			document.getElementById(target).innerHTML = 'Month ' + date.getMonth();
+		}
+		function printYear(target) {
+			var date = new Date();
+			document.getElementById(target).innerHTML = 'Year ' + date.getFullYear();
+		}
+		function printText(target, text) {
+			var date = new Date();
+			document.getElementById(target).innerHTML = text;
+		}
 		function printScore(target, action) {
 			var targetTable = document.getElementById(target);
 			targetTable.innerHTML = '';
@@ -48,8 +60,7 @@
 				success: function(msg) {
 					result = JSON.parse(msg);
 					for (var i = 0; i < result.length; i++) {
-						var date = new Date(result[i].time);
-						addToList(target, result[i].name, result[i].time.split(" ")[1]);
+						addToList(target, result[i].name, result[i].moment);
 					}
 				}
 			});
@@ -78,6 +89,13 @@
 			var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
 			// Return array of year and week number
 			return weekNo;
+		}
+		function makeActive(button) {
+			var buttons = document.getElementsByTagName('button');
+			for (var ding in buttons) {
+				buttons[ding].className = '';
+			}
+			button.className = 'active';
 		}
 	</script>
 	
@@ -143,6 +161,10 @@
 			float: right;
 			border-left: 1px solid #ccc;
 		}
+			#score .active {
+				background: #999;
+				color: #000;
+			}
 	</style>
 </head>
 <body>
@@ -159,15 +181,15 @@
 		</table>
 	</div> -->
 	<div class="score_field" id="score">
-		</p>
 		<p>
-			<button onclick="printYesterday('time'); printScore('table_score', 'getYesterday');">Yesterday</button>
-			<button onclick="printWeek('time'); printScore('table_score', 'getWeek');">Week</button>
-			<button onclick="printYesterday('time'); printScore('table_score', 'getMonth');">Month</button>
-			<button onclick="printYesterday('time'); printScore('table_score', 'getYear');">Year</button>
-			<button onclick="printYesterday('time'); printScore('table_score', 'getTop');">All time</button>
+			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday');" class="active">Yesterday</button>
+			<button onclick="makeActive(this); printWeek('time'); printScore('table_score', 'getWeek');">Week</button>
+			<button onclick="makeActive(this); printMonth('time'); printScore('table_score', 'getMonth');">Month</button>
+			<button onclick="makeActive(this); printYear('time'); printScore('table_score', 'getYear');">Year</button>
+			<button onclick="makeActive(this); printText('time', ''); printScore('table_score', 'getTop');">All time</button>
 		</p>
 		<p id="time">
+		</p>
 		<table id="table_score">
 		</table>
 	</div>
