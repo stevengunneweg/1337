@@ -4,30 +4,10 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script type="text/javascript">
 		window.onload = function() {
-			$.ajax({
-			    data: 'action=getToday',
-				url: 'manager.php',
-				method: 'POST', // or GET
-				success: function(msg) {
-					result = JSON.parse(msg);
-					for (var i = 0; i < result.length; i++) {
-						var date = new Date(result[i].time);
-						addToList('table_today', result[i].name, result[i].time.split(" ")[1]);
-					}
-				}
-			});
-			$.ajax({
-			    data: 'action=getYesterday',
-				url: 'manager.php',
-				method: 'POST', // or GET
-				success: function(msg) {
-					result = JSON.parse(msg);
-					for (var i = 0; i < result.length; i++) {
-						var date = new Date(result[i].time);
-						addToList('table_yesterday', result[i].name, result[i].time.split(" ")[1]);
-					}
-				}
-			});
+			printScore('table_today', 'getToday');
+
+			printYesterday('time');
+			printScore('table_score', 'getYesterday');
 		}
 		function send() {
 			if (!document.getElementById('name_field').value) {
@@ -44,6 +24,36 @@
 				});
 			}
 		}
+
+		function printToday(target) {
+			var today = new Date();
+			document.getElementById(target).innerHTML = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
+		}
+		function printYesterday(target) {
+			var yesterday = new Date();
+			yesterday.setDate(yesterday.getDate() - 1);
+			document.getElementById(target).innerHTML = yesterday.getDate() + '/' + (yesterday.getMonth() + 1) + '/' + yesterday.getFullYear();
+		}
+		function printWeek(target) {
+			var date = new Date();
+			document.getElementById(target).innerHTML = 'Week ' + getWeekNumber(date);
+		}
+		function printScore(target, action) {
+			var targetTable = document.getElementById(target);
+			targetTable.innerHTML = '';
+			$.ajax({
+			    data: 'action=' + action,
+				url: 'manager.php',
+				method: 'POST', // or GET
+				success: function(msg) {
+					result = JSON.parse(msg);
+					for (var i = 0; i < result.length; i++) {
+						var date = new Date(result[i].time);
+						addToList(target, result[i].name, result[i].time.split(" ")[1]);
+					}
+				}
+			});
+		}
 		function addToList(table_id_name, name, timestamp) {
 			var table = document.getElementById(table_id_name);
 			var row = table.insertRow(-1);
@@ -55,14 +65,19 @@
 			cell_score.innerHTML = timestamp;
 		}
 
-		function printToday(target) {
-			var today = new Date();
-			document.getElementById(target).innerHTML = today.getDate() + '/' + (today.getMonth() + 1) + '/' + today.getFullYear();
-		}
-		function printYesterday(target) {
-			var yesterday = new Date();
-			yesterday.setDate(yesterday.getDate() - 1);
-			document.getElementById(target).innerHTML = yesterday.getDate() + '/' + (yesterday.getMonth() + 1) + '/' + yesterday.getFullYear();
+		function getWeekNumber(d) {
+			// Copy date so don't modify original
+			d = new Date(+d);
+			d.setHours(0,0,0);
+			// Set to nearest Thursday: current date + 4 - current day number
+			// Make Sunday's day number 7
+			d.setDate(d.getDate() + 4 - (d.getDay()||7));
+			// Get first day of year
+			var yearStart = new Date(d.getFullYear(),0,1);
+			// Calculate full weeks to nearest Thursday
+			var weekNo = Math.ceil(( ( (d - yearStart) / 86400000) + 1)/7)
+			// Return array of year and week number
+			return weekNo;
 		}
 	</script>
 	
@@ -123,6 +138,11 @@
 			float: right;
 			border-left: 1px solid #ccc;
 		}
+
+		#score {
+			float: right;
+			border-left: 1px solid #ccc;
+		}
 	</style>
 </head>
 <body>
@@ -132,10 +152,23 @@
 		<table id="table_today">
 		</table>
 	</div>
-	<div class="score_field" id="yesterday">
+	<!-- <div class="score_field" id="yesterday">
 		<h1>Yesterday</h1>
 		<p id="date_yesterday"><script type="text/javascript">printYesterday('date_yesterday');</script></p>
 		<table id="table_yesterday">
+		</table>
+	</div> -->
+	<div class="score_field" id="score">
+		</p>
+		<p>
+			<button onclick="printYesterday('time'); printScore('table_score', 'getYesterday');">Yesterday</button>
+			<button onclick="printWeek('time'); printScore('table_score', 'getWeek');">Week</button>
+			<button onclick="printYesterday('time'); printScore('table_score', 'getMonth');">Month</button>
+			<button onclick="printYesterday('time'); printScore('table_score', 'getYear');">Year</button>
+			<button onclick="printYesterday('time'); printScore('table_score', 'getTop');">All time</button>
+		</p>
+		<p id="time">
+		<table id="table_score">
 		</table>
 	</div>
 

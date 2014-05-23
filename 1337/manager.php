@@ -15,6 +15,18 @@ try {
 			case 'getYesterday':
 				getYesterdayScore();
 				break;
+			case 'getWeek':
+				getWeekScore();
+				break;
+			case 'getMonth':
+				getTopScore();
+				break;
+			case 'getYear':
+				getTopScore();
+				break;
+			case 'getTop':
+				getTopScore();
+				break;
 		}
 	}
 } catch (PDOException $e) {
@@ -26,7 +38,7 @@ try {
 function getDayScore() {
 	global $dbh;
 
-	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE time >= CURDATE() AND (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
+	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE DATE(time) = DATE(CURDATE()) AND (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
 	$stmt->execute();
 	$result = $stmt->fetchAll();
 	echo json_encode($result);
@@ -34,7 +46,23 @@ function getDayScore() {
 function getYesterdayScore() {
 	global $dbh;
 
-	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE time >= DATESUB(CURDATE() - INTERVAL 1 DAY) AND (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
+	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE DATE(time) = DATE(DATE_ADD(CURDATE(), INTERVAL -1 DAY)) AND (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
+	$stmt->execute();
+	$result = $stmt->fetchAll();
+	echo json_encode($result);
+}
+function getWeekScore() {
+	global $dbh;
+
+	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE DATEPART(wk, time) = DATEPART(wk, CURDATE()) AND (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
+	$stmt->execute();
+	$result = $stmt->fetchAll();
+	echo json_encode($result);
+}
+function getTopScore() {
+	global $dbh;
+
+	$stmt = $dbh->prepare('SELECT name, time FROM listing WHERE (HOUR(time) = 13 AND MINUTE(time) = 37) ORDER BY time ASC LIMIT 30');
 	$stmt->execute();
 	$result = $stmt->fetchAll();
 	echo json_encode($result);
