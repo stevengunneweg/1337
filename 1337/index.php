@@ -20,7 +20,8 @@
 					url: 'manager.php',
 					method: 'POST', // or GET
 					success: function(msg) {
-						location.reload();
+						console.log(msg)
+						// location.reload();
 					}
 				});
 			}
@@ -61,15 +62,19 @@
 				success: function(msg) {
 					result = JSON.parse(msg);
 					for (var i = 0; i < result.length; i++) {
-						addToList(target, result[i].name, result[i].moment);
+						addToList(target, result[i].name, result[i].moment, result[i].day);
+					}
+					if (result.length == 0) {
+						addToList(target, 'This list is currently empty', '', '');
 					}
 				}
 			});
 		}
-		function addToList(table_id_name, name, timestamp) {
+		function addToList(table_id_name, name, timestamp, day) {
 			var table = document.getElementById(table_id_name);
 			var row = table.insertRow(-1);
 			var cell_score = row.insertCell();
+			cell_score.setAttribute('title', day);
 			var cell_name = row.insertCell();
 			cell_score.className = 'score';
 			cell_name.className = 'name';

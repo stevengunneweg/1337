@@ -44,7 +44,7 @@ try {
 		}
 	}
 } catch (PDOException $e) {
-	print "Error!: " . $e->getMessage() . "<br/>";
+	print "Error connecting to database";
 	die();
 }
 
@@ -58,19 +58,40 @@ function getScore($query) {
 	echo json_encode($result);
 }
 
-function pushScore($name) {
-	if (strlen($name) < 20) {
-		global $dbh;
+function hasRecordToday($ip) {
+	global $dbh, $isLeet;
 
-		$cur_micro = microtime(true);
-		$micro = sprintf("%06d",($cur_micro - floor($cur_micro)) * 1000000);
-		$date = new DateTime( date('Y-m-d H:i:s.'.$micro,$cur_micro) );
-		$_time = $date->format("Y-m-d H:i:s.u");
-		
-		$stmt = $dbh->prepare('INSERT INTO listing (name, time) VALUES (:name, :time)');
-		$stmt->execute(array(':name'=>$name, ':time'=>$_time));
-	} else {
-		print 'name is too long';
+	$stmt = $dbh->prepare("SELECT count(ip) as ip_count FROM listing WHERE DATE(time) = CURDATE()");
+	$stmt->execute();
+	$result = $stmt->fetchAll();
+
+	return ($result[0]['ip_count'] > 0);
+}
+
+function pushScore($name) {
+	if (strlen($name) > 20) {
+		print 'Name is too long';
+		return;
+	} else if (strlen($name) < 2) {
+		print 'Name is too short';
+		return;
+	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
+		print 'Already posted today';
+		return;
+	// } else if (date("H") != 13 && date("i") != 37) {
+	// 	print 'It is not 13:37';
+	// 	return;
 	}
+
+	global $dbh;
+
+	$cur_micro = microtime(true);
+	$micro = sprintf("%06d",($cur_micro - floor($cur_micro)) * 1000000);
+	$date = new DateTime( date('Y-m-d H:i:s.'.$micro,$cur_micro) );
+	$_time = $date->format("Y-m-d H:i:s.u");
+	
+	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
+	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
+	print 'ok';
 }
 ?>
