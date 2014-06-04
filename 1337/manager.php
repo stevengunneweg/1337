@@ -61,7 +61,7 @@ function getScore($query) {
 function hasRecordToday($ip) {
 	global $dbh, $isLeet;
 
-	$stmt = $dbh->prepare("SELECT count(ip) as ip_count FROM listing WHERE DATE(time) = CURDATE()");
+	$stmt = $dbh->prepare("SELECT count(ip) as ip_count FROM listing WHERE DATE(time) = CURDATE() AND ip = '".$ip."'");
 	$stmt->execute();
 	$result = $stmt->fetchAll();
 
