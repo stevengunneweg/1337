@@ -180,12 +180,6 @@
 		<table id="table_today">
 		</table>
 	</div>
-	<!-- <div class="score_field" id="yesterday">
-		<h1>Yesterday</h1>
-		<p id="date_yesterday"><script type="text/javascript">printYesterday('date_yesterday');</script></p>
-		<table id="table_yesterday">
-		</table>
-	</div> -->
 	<div class="score_field" id="score">
 		<p>
 			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday');" class="active">Yesterday</button>

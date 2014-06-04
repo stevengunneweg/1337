@@ -61,7 +61,7 @@ function getScore($query) {
 function hasRecordToday($ip) {
 	global $dbh, $isLeet;
 
-	$stmt = $dbh->prepare("SELECT count(ip) as ip_count FROM listing WHERE DATE(time) = CURDATE() AND ip = '".$ip."'");
+	$stmt = $dbh->prepare("SELECT count(ip) as ip_count FROM listing WHERE DATE(time) = CURDATE() AND TIME_TO_SEC(time) > TIME_TO_SEC(CURTIME()) - 20 AND ip = '".$ip."'");
 	$stmt->execute();
 	$result = $stmt->fetchAll();
 
@@ -76,7 +76,7 @@ function pushScore($name) {
 		print 'Name is too short';
 		return;
 	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
-		print 'Already posted today';
+		print 'You need to wait 20 after your previous post';
 		return;
 	// } else if (date("H") != 13 && date("i") != 37) {
 	// 	print 'It is not 13:37';
