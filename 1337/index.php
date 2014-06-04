@@ -20,8 +20,8 @@
 					url: 'manager.php',
 					method: 'POST', // or GET
 					success: function(msg) {
-						console.log(msg)
-						// location.reload();
+						alert(msg)
+						location.reload();
 					}
 				});
 			}
