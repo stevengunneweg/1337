@@ -6,13 +6,19 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<?php include_once("g_analytics.php") ?>
 	<script type="text/javascript">
+		var loader = null;
 		window.onload = function() {
+			loader = document.createElement("img");
+			loader.src = "assets/loading.gif";
+			loader.width = 32;
+			loader.height = 10;
+
 			getName();
 
-			printScore('table_today', 'getToday');
+			printScore('table_today', 'getToday', 0);
 
 			printYesterday('time');
-			printScore('table_score', 'getYesterday');
+			printScore('table_score', 'getYesterday', 1);
 		}
 		function send() {
 			if (!document.getElementById('name_field').value) {
@@ -66,7 +72,10 @@
 			var date = new Date();
 			document.getElementById(target).innerHTML = text;
 		}
-		function printScore(target, action) {
+		function printScore(target, action, field) {
+			var _loader = loader.cloneNode();
+			document.getElementsByClassName('score_field')[field].appendChild(_loader);
+
 			var targetTable = document.getElementById(target);
 			targetTable.innerHTML = '';
 			$.ajax({
@@ -74,6 +83,7 @@
 				url: 'manager.php',
 				method: 'POST', // or GET
 				success: function(msg) {
+					document.getElementsByClassName('score_field')[field].removeChild(_loader);
 					result = JSON.parse(msg);
 					for (var i = 0; i < result.length; i++) {
 						addToList(target, result[i].name, result[i].moment, result[i].day);
@@ -139,6 +149,7 @@
 				border-left: none;
 				border-right: none;
 				text-align: center;
+				/*font-family: courier new;*/
 			}
 		#button {
 			position: fixed;
@@ -159,6 +170,17 @@
 			padding-right: 20px;
 			text-align: center;
 		}
+			.score_field button {
+				display: inline-block;
+				margin: 0px;
+				padding: 8px;
+				border-top-left-radius: 10px;
+				border-top-right-radius: 10px;
+				border-bottom-left-radius: 0px;
+				border-bottom-right-radius: 0px;
+				border: none;
+				outline: 0;
+			}
 			.score_field table {
 				width: 100%;
 			}
@@ -196,11 +218,11 @@
 	</div>
 	<div class="score_field" id="score">
 		<p>
-			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday');" class="active">Yesterday</button>
-			<button onclick="makeActive(this); printWeek('time'); printScore('table_score', 'getWeek');">Week</button>
-			<button onclick="makeActive(this); printMonth('time'); printScore('table_score', 'getMonth');">Month</button>
-			<button onclick="makeActive(this); printYear('time'); printScore('table_score', 'getYear');">Year</button>
-			<button onclick="makeActive(this); printText('time', ''); printScore('table_score', 'getTop');">All time</button>
+			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday', 1);" class="active">Yesterday</button>
+			<button onclick="makeActive(this); printWeek('time'); printScore('table_score', 'getWeek', 1);">Week</button>
+			<button onclick="makeActive(this); printMonth('time'); printScore('table_score', 'getMonth', 1);">Month</button>
+			<button onclick="makeActive(this); printYear('time'); printScore('table_score', 'getYear', 1);">Year</button>
+			<button onclick="makeActive(this); printText('time', ''); printScore('table_score', 'getTop', 1);">All time</button>
 		</p>
 		<p id="time">
 		</p>
@@ -216,7 +238,7 @@
 	</div>
 
 	<div>
-		if you do not get it <a href="/info.html" target="blanc">read me</a>
+		if you do not get it, <a href="/info.html" target="blanc">read me</a>
 	</div>
 </body>
 </html>
