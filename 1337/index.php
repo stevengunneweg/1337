@@ -1,10 +1,14 @@
+
 <!DOCTYPE HTML>
 <html>
 <head>
 	<link rel="shortcut icon" href="assets/favicon.ico"/>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<?php include_once("g_analytics.php") ?>
 	<script type="text/javascript">
 		window.onload = function() {
+			getName();
+
 			printScore('table_today', 'getToday');
 
 			printYesterday('time');
@@ -25,6 +29,16 @@
 					}
 				});
 			}
+		}
+		function getName() {
+			$.ajax({
+			    data: 'action=getNameWithIp',
+				url: 'manager.php',
+				method: 'POST', // or GET
+				success: function(msg) {
+					document.getElementById('name_field').value = JSON.parse(msg)[0]['name'];
+				}
+			});
 		}
 
 		function printToday(target) {

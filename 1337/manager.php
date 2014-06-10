@@ -17,7 +17,7 @@ $queryYear = $select." WHERE YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
 $queryTop = $select."WHERE true".$isLeet.$order;
 
 try {
-	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name, $username, $pass);
+	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
 	if (isset($_POST['action'])) {
 		switch($_POST['action']) {
 			case 'new':
@@ -41,6 +41,9 @@ try {
 			case 'getTop':
 				getScore($queryTop);
 				break;
+			case 'getNameWithIp':
+				getNameWithIp();
+				break;
 		}
 	}
 } catch (PDOException $e) {
@@ -54,6 +57,15 @@ function getScore($query) {
 
 	$stmt = $dbh->prepare($query);
 	$stmt->execute();
+	$result = $stmt->fetchAll();
+	echo json_encode($result);
+}
+
+function getNameWithIp() {
+	global $dbh;
+
+	$stmt = $dbh->prepare("SELECT name FROM listing WHERE ip = :ip ORDER BY name LIMIT 1");
+	$stmt->execute(array(':ip'=>$_SERVER['REMOTE_ADDR']));
 	$result = $stmt->fetchAll();
 	echo json_encode($result);
 }
