@@ -89,7 +89,9 @@
 						addToList(target, result[i].name, result[i].moment, result[i].day);
 					}
 					if (result.length == 0) {
-						addToList(target, 'This list is currently empty', '', '');
+						var mess = document.createElement('p');
+						mess.innerHTML = 'This list is currently empty';
+						document.getElementsByClassName('score_field')[field].appendChild(mess);
 					}
 				}
 			});
