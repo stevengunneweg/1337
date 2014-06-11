@@ -44,6 +44,9 @@ try {
 			case 'getNameWithIp':
 				getNameWithIp();
 				break;
+			case 'getServerTime':
+				getServerTime();
+				break;
 		}
 	}
 } catch (PDOException $e) {
@@ -51,6 +54,12 @@ try {
 	die();
 }
 
+function _getCurrentServerTime() {
+	$cur_micro = microtime(true);
+	$micro = sprintf("%06d",($cur_micro - floor($cur_micro)) * 1000000);
+	$date = new DateTime( date('Y-m-d H:i:s.'.$micro,$cur_micro) );
+	return $date->format("Y-m-d H:i:s.u");
+}
 
 function getScore($query) {
 	global $dbh;
@@ -97,13 +106,14 @@ function pushScore($name) {
 
 	global $dbh;
 
-	$cur_micro = microtime(true);
-	$micro = sprintf("%06d",($cur_micro - floor($cur_micro)) * 1000000);
-	$date = new DateTime( date('Y-m-d H:i:s.'.$micro,$cur_micro) );
-	$_time = $date->format("Y-m-d H:i:s.u");
+	$_time = _getCurrentServerTime();
 	
 	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
 	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
 	print 'ok';
+}
+
+function getServerTime() {
+	echo _getCurrentServerTime();	
 }
 ?>
