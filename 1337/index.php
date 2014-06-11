@@ -14,6 +14,7 @@
 			loader.height = 10;
 
 			getName();
+			startServerSyncedClock();
 
 			printScore('table_today', 'getToday', 0);
 
@@ -129,6 +130,21 @@
 			}
 			button.className = 'active';
 		}
+		function startServerSyncedClock() {
+			var serverClockElement = document.getElementById('serverClock');
+			var updatesPerSecond = 3;
+			var updateFunc = function() {
+				$.ajax({
+				    data: 'action=getServerTime',
+					url: 'manager.php',
+					method: 'POST', // or GET
+					success: function(msg) {
+						serverClockElement.innerText = msg.slice(0, 8);
+					}
+				});
+			};
+			setInterval(1000/updatesPerSecond, updateFunc);
+		}
 	</script>
 	
 	<style type="text/css">
@@ -214,6 +230,7 @@
 <body>
 	<div class="score_field" id="today">
 		<h1>Today</h1>
+		<p id="serverClock">00:00:00<p>
 		<p id="date_today"><script type="text/javascript">printToday('date_today');</script></p>
 		<table id="table_today">
 		</table>
