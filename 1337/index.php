@@ -139,11 +139,11 @@
 					url: 'manager.php',
 					method: 'POST', // or GET
 					success: function(msg) {
-						serverClockElement.innerText = msg.slice(0, 8);
+						serverClockElement.innerText = msg.split(' ')[1].split('.')[0];
 					}
 				});
 			};
-			setInterval(1000/updatesPerSecond, updateFunc);
+			setInterval(updateFunc, 1000/updatesPerSecond);
 		}
 	</script>
 	
