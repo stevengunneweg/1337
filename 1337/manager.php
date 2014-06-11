@@ -64,7 +64,7 @@ function getScore($query) {
 function getNameWithIp() {
 	global $dbh;
 
-	$stmt = $dbh->prepare("SELECT name FROM listing WHERE ip = :ip ORDER BY name LIMIT 1");
+	$stmt = $dbh->prepare("SELECT name FROM listing WHERE ip = :ip ORDER BY time DESC LIMIT 1");
 	$stmt->execute(array(':ip'=>$_SERVER['REMOTE_ADDR']));
 	$result = $stmt->fetchAll();
 	echo json_encode($result);
