@@ -101,7 +101,7 @@
 			var table = document.getElementById(table_id_name);
 			var row = table.insertRow(-1);
 			var cell_score = row.insertCell();
-			cell_score.setAttribute('title', day);
+			cell_score.setAttribute('title', 'posted on ' + day);
 			var cell_name = row.insertCell();
 			cell_score.className = 'score';
 			cell_name.className = 'name';
@@ -222,7 +222,7 @@
 			border-left: 1px solid #ccc;
 		}
 			#score .active {
-				background: #999;
+				background: #00cef3;
 				color: #000;
 			}
 	</style>
