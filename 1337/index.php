@@ -131,7 +131,6 @@
 			button.className = 'active';
 		}
 		function startServerSyncedClock() {
-			var serverClockElement = document.getElementById('serverClock');
 			var updatesPerSecond = 3;
 			var updateFunc = function() {
 				$.ajax({
@@ -139,7 +138,7 @@
 					url: 'manager.php',
 					method: 'POST', // or GET
 					success: function(msg) {
-						serverClockElement.innerText = msg.split(' ')[1].split('.')[0];
+						$('#serverClock').text(msg.split(' ')[1].split('.')[0]);
 					}
 				});
 			};
