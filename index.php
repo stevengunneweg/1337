@@ -75,32 +75,39 @@
 		function printText(target, text) {
 			document.getElementById(target).innerHTML = text;
 		}
-		function printScore(target, action, field) {
-			var _loader = loader.cloneNode();
-			document.getElementsByClassName('score_field')[field].appendChild(_loader);
-
+		function printScore(target, action) {
 			var targetTable = document.getElementById(target);
 			targetTable.innerHTML = '';
+			
+			var _loader = loader.cloneNode();
+			targetTable.parentNode.appendChild(_loader);
+			
 			$.ajax({
 			    data: 'action=' + action,
 				url: 'manager.php',
 				method: 'POST', // or GET
 				success: function(msg) {
-					document.getElementsByClassName('score_field')[field].removeChild(_loader);
+					targetTable.parentNode.removeChild(_loader);
+					
 					result = JSON.parse(msg);
-					for (var i = 0; i < result.length; i++) {
-						addToList(target, result[i].name, result[i].moment, result[i].day);
-					}
-					if (result.length == 0) {
-						var mess = document.createElement('p');
-						mess.innerHTML = 'This list is currently empty';
-						document.getElementsByClassName('score_field')[field].appendChild(mess);
+					if (result.length === 0) {
+						emptyList(targetTable);
+					} else {
+						for (var i = 0; i < result.length; i++) {
+							addToList(targetTable, result[i].name, result[i].moment, result[i].day);
+						}
 					}
 				}
 			});
 		}
-		function addToList(table_id_name, name, timestamp, day) {
-			var table = document.getElementById(table_id_name);
+		function emptyList(table) {
+			var row = table.insertRow(-1);
+			var cell = row.insertCell(-1);
+			cell.className = 'empty';
+			cell.innerHTML = 'This list is currently empty';
+		}
+		
+		function addToList(table, name, timestamp, day) {
 			var row = table.insertRow(-1);
 			
 			var cell_name = row.insertCell(-1);
@@ -243,11 +250,11 @@
 	</div>
 	<div class="score_field" id="score">
 		<p>
-			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday', 1);" class="active">Yesterday</button>
-			<button onclick="makeActive(this); printWeek('time'); printScore('table_score', 'getWeek', 1);">Week</button>
-			<button onclick="makeActive(this); printMonth('time'); printScore('table_score', 'getMonth', 1);">Month</button>
-			<button onclick="makeActive(this); printYear('time'); printScore('table_score', 'getYear', 1);">Year</button>
-			<button onclick="makeActive(this); printText('time', ''); printScore('table_score', 'getTop', 1);">All time</button>
+			<button onclick="makeActive(this); printYesterday('time'); printScore('table_score', 'getYesterday');" class="active">Yesterday</button>
+			<button onclick="makeActive(this); printWeek('time'); printScore('table_score', 'getWeek');">Week</button>
+			<button onclick="makeActive(this); printMonth('time'); printScore('table_score', 'getMonth');">Month</button>
+			<button onclick="makeActive(this); printYear('time'); printScore('table_score', 'getYear');">Year</button>
+			<button onclick="makeActive(this); printText('time', ''); printScore('table_score', 'getTop');">All time</button>
 		</p>
 		<p id="time">
 		</p>
