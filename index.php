@@ -4,6 +4,7 @@
 <head>
 	<link rel="shortcut icon" href="assets/favicon.ico"/>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+	<title>1337</title>
 	<?php include_once("g_analytics.php") ?>
 	<script type="text/javascript">
 		var loader = null;
@@ -55,22 +56,23 @@
 		function printYesterday(target) {
 			var yesterday = new Date();
 			yesterday.setDate(yesterday.getDate() - 1);
-			document.getElementById(target).innerHTML = yesterday.getDate() + '/' + (yesterday.getMonth() + 1) + '/' + yesterday.getFullYear();
+			document.getElementById(target).innerHTML = '<b>' + yesterday.getDate() + '/' + (yesterday.getMonth() + 1) + '/' + yesterday.getFullYear() + '</b>';
 		}
 		function printWeek(target) {
 			var date = new Date();
-			document.getElementById(target).innerHTML = 'Week ' + getWeekNumber(date);
+			document.getElementById(target).innerHTML = 'Best score of <b>week ' + getWeekNumber(date) + '</b>';
 		}
 		function printMonth(target) {
 			var date = new Date();
-			document.getElementById(target).innerHTML = 'Month ' + date.getMonth();
+			var months = ['January', 'February', 'March', 'April', 'May', 'June', 
+				'July', 'August', 'September', 'October', 'November', 'December'];
+			document.getElementById(target).innerHTML = 'Best scores of <b>' + months[date.getMonth()] + '</b>';
 		}
 		function printYear(target) {
 			var date = new Date();
-			document.getElementById(target).innerHTML = 'Year ' + date.getFullYear();
+			document.getElementById(target).innerHTML = 'Best scores of <b>' + date.getFullYear() + '</b>';
 		}
 		function printText(target, text) {
-			var date = new Date();
 			document.getElementById(target).innerHTML = text;
 		}
 		function printScore(target, action, field) {
@@ -100,12 +102,14 @@
 		function addToList(table_id_name, name, timestamp, day) {
 			var table = document.getElementById(table_id_name);
 			var row = table.insertRow(-1);
-			var cell_score = row.insertCell();
-			cell_score.setAttribute('title', 'posted on ' + day);
-			var cell_name = row.insertCell();
-			cell_score.className = 'score';
+			
+			var cell_name = row.insertCell(-1);
 			cell_name.className = 'name';
 			cell_name.innerHTML = name;
+			
+			var cell_score = row.insertCell(-1);
+			cell_score.className = 'score';
+			cell_score.setAttribute('title', 'posted on ' + day);
 			cell_score.innerHTML = timestamp;
 		}
 
@@ -131,14 +135,17 @@
 			button.className = 'active';
 		}
 		function startServerSyncedClock() {
-			var updatesPerSecond = 3;
+			var updatesPerSecond = 3,
+				origTitle = document.title;
 			var updateFunc = function() {
 				$.ajax({
 				    data: 'action=getServerTime',
 					url: 'manager.php',
 					method: 'POST', // or GET
 					success: function(msg) {
-						$('#serverClock').text(msg.split(' ')[1].split('.')[0]);
+						var time = msg.split(' ')[1].split('.')[0];
+						$('#serverClock').text(time);
+						document.title = origTitle + " - " + time;
 					}
 				});
 			};
@@ -181,7 +188,7 @@
 			}
 		.score_field {
 			position: relative;
-			width: 300px;
+			width: 340px;
 			height: 100%;
 			padding-left: 20px;
 			padding-right: 20px;
@@ -256,7 +263,7 @@
 	</div>
 
 	<div>
-		if you do not get it, <a href="/info.html" target="blanc">read me</a>
+		if you do not get it, <a href="info.html" target="blanc">read me</a>
 	</div>
 </body>
 </html>
