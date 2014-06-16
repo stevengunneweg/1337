@@ -7,7 +7,8 @@
 	<title>1337</title>
 	<?php include_once("g_analytics.php") ?>
 	<script type="text/javascript">
-		var loader = null;
+		var loader = null,
+			error = false;
 		window.onload = function() {
 			loader = document.createElement("img");
 			loader.src = "assets/loading.gif";
@@ -25,31 +26,47 @@
 			printYesterday('time');
 			printScore('table_score', 'getYesterday', 1);
 		}
+		function showError() {
+			if (!error) {
+				alert('There is a problem on the server. Please try again later');
+			}
+			error = true;
+		}
 		function send() {
 			if (!document.getElementById('name_field').value) {
 				alert('fill in a name!\nHURRRYYY!!');
 				document.getElementById('name_field').focus();
 			} else {
-				$.ajax({
-				    data: 'action=new' + '&data=' + document.getElementById('name_field').value,
-					url: 'manager.php',
-					method: 'POST', // or GET
-					success: function(msg) {
-						alert(msg)
-						location.reload();
-					}
-				});
+				if (!error) {
+					$.ajax({
+					    data: 'action=new' + '&data=' + document.getElementById('name_field').value,
+						url: 'manager.php',
+						method: 'POST', // or GET
+						success: function(msg) {
+							alert(msg)
+							location.reload();
+						},
+						error: function(e) {
+							showError();
+						}
+					});
+				}
 			}
 		}
 		function getName() {
-			$.ajax({
-			    data: 'action=getNameWithIp',
-				url: 'manager.php',
-				method: 'POST', // or GET
-				success: function(msg) {
-					document.getElementById('name_field').value = JSON.parse(msg)[0]['name'];
-				}
-			});
+			if (!error) {
+				$.ajax({
+				    data: 'action=getNameWithIp',
+					url: 'manager.php',
+					method: 'POST', // or GET
+					success: function(msg) {
+						document.getElementById('name_field').value = JSON.parse(msg)[0]['name'];
+					},
+					error: function(e) {
+						showError();
+					}
+				});
+			}
 		}
 
 		function printToday(target) {
@@ -85,23 +102,28 @@
 			var _loader = loader.cloneNode();
 			targetTable.parentNode.appendChild(_loader);
 			
-			$.ajax({
-			    data: 'action=' + action,
-				url: 'manager.php',
-				method: 'POST', // or GET
-				success: function(msg) {
-					targetTable.parentNode.removeChild(_loader);
-					
-					result = JSON.parse(msg);
-					if (result.length === 0) {
-						emptyList(targetTable);
-					} else {
-						for (var i = 0; i < result.length; i++) {
-							addToList(targetTable, result[i].name, result[i].moment, result[i].day);
+			if (!error) {
+				$.ajax({
+				    data: 'action=' + action,
+					url: 'manager.php',
+					method: 'POST', // or GET
+					success: function(msg) {
+						targetTable.parentNode.removeChild(_loader);
+						
+						result = JSON.parse(msg);
+						if (result.length === 0) {
+							emptyList(targetTable);
+						} else {
+							for (var i = 0; i < result.length; i++) {
+								addToList(targetTable, result[i].name, result[i].moment, result[i].day);
+							}
 						}
+					},
+					error: function(e) {
+						showError();
 					}
-				}
-			});
+				});
+			}
 		}
 		function emptyList(table) {
 			var row = table.insertRow(-1);
@@ -148,16 +170,21 @@
 			var updatesPerSecond = 3,
 				origTitle = document.title;
 			var updateFunc = function() {
-				$.ajax({
-				    data: 'action=getServerTime',
-					url: 'manager.php',
-					method: 'POST', // or GET
-					success: function(msg) {
-						var time = msg.split(' ')[1].split('.')[0];
-						$('#serverClock').text(time);
-						document.title = origTitle + " - " + time;
-					}
-				});
+				if (!error) {
+					$.ajax({
+					    data: 'action=getServerTime',
+						url: 'manager.php',
+						method: 'POST', // or GET
+						success: function(msg) {
+							var time = msg.split(' ')[1].split('.')[0];
+							$('#serverClock').text(time);
+							document.title = origTitle + " - " + time;
+						},
+						error: function(e) {
+							showError();
+						}
+					});
+				}
 			};
 			setInterval(updateFunc, 1000/updatesPerSecond);
 		}
