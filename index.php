@@ -5,7 +5,7 @@
 	<title>1337</title>
 	<?php include_once("g_analytics.php") ?>
 	<link rel="shortcut icon" href="assets/favicon.ico"/>
-	
+
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="js/main.js"></script>
 	
@@ -42,6 +42,9 @@
 
 	<div>
 		if you do not get it, <a href="info.html" target="blanc">read me</a>
+		<p>
+			<a href="#" onclick="alert('work in progress');">Click here to claim your name!</a>
+		</p>
 	</div>
 </body>
 </html>
