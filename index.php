@@ -18,6 +18,9 @@
 			startServerSyncedClock();
 
 			printScore('table_today', 'getToday', 0);
+			// setInterval(function() {
+			// 	printScore('table_today', 'getToday', 0);
+			// }, 1000);
 
 			printYesterday('time');
 			printScore('table_score', 'getYesterday', 1);
