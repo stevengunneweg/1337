@@ -47,6 +47,9 @@ try {
 			case 'getServerTime':
 				getServerTime();
 				break;
+			case 'newUser':
+				newUser($_POST['data']);
+				break;
 		}
 	}
 } catch (PDOException $e) {
@@ -99,9 +102,6 @@ function pushScore($name) {
 	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
 		print 'You need to wait 20 after your previous post';
 		return;
-	// } else if (date("H") != 13 && date("i") != 37) {
-	// 	print 'It is not 13:37';
-	// 	return;
 	}
 
 	global $dbh;
@@ -115,5 +115,27 @@ function pushScore($name) {
 
 function getServerTime() {
 	echo _getCurrentServerTime();	
+}
+
+function newUser($data) {
+	global $dbh;
+
+	$data = json_decode($data);
+	$name = $data[0];
+	$pass = $data[1];
+	
+	$stmt = $dbh->prepare('SELECT name FROM users WHERE name = :name');
+	$stmt->execute(array(':name'=>$name));
+	$result = $stmt->fetchAll();
+
+	if (count($result) > 0) {
+		echo 'user with this name already exists';
+		return;
+	}
+
+	$stmt = $dbh->prepare('INSERT INTO users (name, pass) VALUES (:name, :pass)');
+	$stmt->execute(array(':name'=>$name, ':pass'=>sha1($pass)));
+	$result = $stmt->fetchAll();
+	echo 'succes';
 }
 ?>
