@@ -41,9 +41,7 @@
 	</div>
 
 	<div>
-		<p>
-			1337online.com is now autodeploying!!
-		</p>
+		1337online.com is now autodeploying!!<br/>
 		if you do not get it, <a href="info.html" target="blanc">read me</a>
 		<p>
 			<a href="#" onclick="alert('work in progress');">Click here to claim your name!</a>
