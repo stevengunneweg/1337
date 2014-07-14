@@ -42,7 +42,7 @@
 
 	<div>
 		<p>
-			1337online.com should now be autodeploying!!
+			1337online.com is now autodeploying!!
 		</p>
 		if you do not get it, <a href="info.html" target="blanc">read me</a>
 		<p>
