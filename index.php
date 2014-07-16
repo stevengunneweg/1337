@@ -41,8 +41,12 @@
 	</div>
 
 	<div>
-		1337online.com is now autodeploying!!<br/>
-		if you do not get it, <a href="info.html" target="blanc">read me</a>
+		Click <a href="features.html" target="blanc">here</a> to see possible future features<br/>
+		<p style="font-weight: bold; color: #ff0000;">
+			1337online.com is now autodeploying!!
+		</p>
+		<p>
+			if you do not get it, <a href="info.html" target="blanc">read me</a>
 		<p>
 			<a href="#" onclick="alert('work in progress');">Click here to claim your name!</a>
 		</p>
