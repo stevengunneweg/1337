@@ -44,7 +44,9 @@ function send() {
 	}
 }
 function getName() {
-	document.getElementById('name_field').value = getUsername();
+	if (getUsername()) {
+		document.getElementById('name_field').value = getUsername();
+	}
 }
 
 function printToday(target) {
