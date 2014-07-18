@@ -8,6 +8,7 @@
 
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="js/main.js"></script>
+	<script src="js/cookie.js"></script>
 	
 	<link rel='stylesheet' href='css/style.css' type='text/css'>
 </head>
