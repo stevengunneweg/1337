@@ -30,9 +30,3 @@ function getUsername() {
 	}
 }
 
-if (!getUsername()) {
-	console.log("username is not set");
-} else {
-	console.log("username is: " + getUsername());
-}
-
