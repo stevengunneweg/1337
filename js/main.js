@@ -29,6 +29,7 @@ function send() {
 		alert('fill in a name!\nHURRRYYY!!');
 		document.getElementById('name_field').focus();
 	} else {
+		setUsername(document.getElementById('name_field').value);
 		apiCall(
 			'new',
 			document.getElementById('name_field').value,
@@ -43,16 +44,7 @@ function send() {
 	}
 }
 function getName() {
-	apiCall(
-		'getNameWithIp',
-		null,
-		function(msg) {
-			document.getElementById('name_field').value = JSON.parse(msg)[0]['name'];
-		},
-		function(error) {
-			showError(error);
-		}
-	);
+	document.getElementById('name_field').value = getUsername();
 }
 
 function printToday(target) {
