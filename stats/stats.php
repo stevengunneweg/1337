@@ -51,15 +51,105 @@ function getScore($query) {
 		body, html {
 			margin: 0px;
 			padding: 0px;
+			font-family: arial;
+		}
+		#container {
+			width: 70%;
+			min-width: 350px;
+			margin: auto;
 		}
 		#stats, #achievements {
 			float: left;
+			margin: 50px;
 		}
+		#stats {
+		}
+			#stats table {
+				color: #555;
+			}
+				#stats table tr td:first-child {
+					width: 500px;
+				}
+		#achievements {
+			max-width: 520px;
+		}
+			#achievements #achievement_list {
+			}
+				#achievements .achievement {
+					width: 100px;
+					height: 100px;
+					float: left;
+					background: url(../assets/lock.png) no-repeat;
+					background-size: 60% 70%;
+					background-position: center;
+					background-color: #007fff;
+					margin: 15px;
+					border-radius: 10px;
+				}
 	</style>
 </head>
 <body>
-	<h1>Name</h1>
-	<div id="stats"><h2>Stats</h2></div>
-	<div id="achievements"><h2>Achievements</h2></div>
+	<div id="container">
+		<h1>&lt;Name&gt;</h1>
+		<div id="stats">
+			<h2>Stats</h2>
+			<table>
+				<tr>
+					<td>tries</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>times 1st</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>times 2nd</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>times 3rd</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>winstreak</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>best attempt</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>current winstreak</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>current poststreak</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+				<tr>
+					<td>avg. post time</td>
+					<td>&lt;amount&gt;</td>
+				</tr>
+			</table>
+		</div>
+		<div id="achievements">
+			<h2>Achievements</h2>
+			<div id="achievement_list">
+				<div class="achievement" style="background: url(../assets/first.png) no-repeat; background-size: 100% 100%; background-position: center; background-color: #007fff;"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+				<div class="achievement"></div>
+			</div>
+		</div>
+	</div>
 </body>
 </html>
