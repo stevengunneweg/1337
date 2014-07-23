@@ -13,6 +13,9 @@
 1st all time
 win by a milisec (max)
 post in last second (13:37:59)
+post on the 37th second of 1337
+post on the 13th second of 1337
+post on the 13th and 37th second of 1337 on the same day
 */
 
 include('db.php');
