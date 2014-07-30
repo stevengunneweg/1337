@@ -11,8 +11,6 @@ best attempt
 current winstreak
 average post time
 */
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 include('../db.php');
 
@@ -45,7 +43,7 @@ function getBestTry() {
 	$result = $stmt->fetchAll();
 	return $result[0][0];
 }
-function getAvgTime() {
+/*function getAvgTime() {
 	global $dbh;
 
 	$query = "SELECT SUBSTRING(time FROM 12) FROM listing WHERE name = :name";
@@ -59,7 +57,7 @@ function getAvgTime() {
 		$count++;
     }
 	return $total / $count;
-}
+}*/
 function hasAchievement($achievement) {
 	return false;
 }
