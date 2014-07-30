@@ -17,17 +17,10 @@ include('../db.php');
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
 
-$tries = "SELECT count(name) FROM listing WHERE name = :name";
+$tries = "SELECT count(*) FROM listing WHERE name = :name";
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
-	if (isset($_POST['action'])) {
-		switch($_POST['action']) {
-			case 'tries':
-				getScore($tries);
-				break;
-		}
-	}
 } catch (PDOException $e) {
 	print "Error connecting to database";
 	die();
