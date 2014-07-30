@@ -37,11 +37,26 @@ function getBestTry() {
 	global $dbh;
 
 	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
-	$query = "SELECT time FROM listing WHERE name = :name ".$isLeet."ORDER BY SUBSTRING(time from 12) ASC";
+	$query = "SELECT time FROM listing WHERE name = :name ".$isLeet."ORDER BY SUBSTRING(time FROM 12) ASC";
 	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
 	return $result[0][0];
+}
+function getAvgTime() {
+	global $dbh;
+
+	$query = "SELECT SUBSTRING(time FROM 12) FROM listing WHERE name = :name";
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name'=>'Steven'));
+	
+	$total = 0;
+	$count = 0;
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$total += intval(str_replace('.', '', str_replace(':', '', $row[0]));
+		$count++;
+    }
+	return $total / $count;
 }
 function hasAchievement($achievement) {
 	return false;
