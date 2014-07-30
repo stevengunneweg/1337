@@ -16,6 +16,7 @@ include('../db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
+$name = $_POST['name'];
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
@@ -25,30 +26,30 @@ try {
 }
 
 function getTries() {
-	global $dbh;
+	global $dbh, $name;
 
 	$query = "SELECT count(*) FROM listing WHERE name = :name";
 	$stmt = $dbh->prepare($query);
-	$stmt->execute(array(':name'=>'Steven'));
+	$stmt->execute(array(':name'=>$name));
 	$result = $stmt->fetchAll();
 	return $result[0][0];
 }
 function getBestTry() {
-	global $dbh;
+	global $dbh, $name;
 
 	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
 	$query = "SELECT time FROM listing WHERE name = :name ".$isLeet."ORDER BY SUBSTRING(time FROM 12) ASC";
 	$stmt = $dbh->prepare($query);
-	$stmt->execute(array(':name'=>'Steven'));
+	$stmt->execute(array(':name'=>$name));
 	$result = $stmt->fetchAll();
 	return $result[0][0];
 }
 function getAvgTime() {
-	global $dbh;
+	global $dbh, $name;
 
 	$query = "SELECT SUBSTRING(time FROM 12) as time FROM listing WHERE name = :name";
 	$stmt = $dbh->prepare($query);
-	$stmt->execute(array(':name'=>'Steven'));
+	$stmt->execute(array(':name'=>$name));
 	
 	$total = 0;
 	$count = 0;
