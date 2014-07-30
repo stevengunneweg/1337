@@ -36,7 +36,8 @@ function getTries() {
 function getBestTry() {
 	global $dbh;
 
-	$query = "SELECT time FROM listing WHERE name = :name ORDER BY SUBSTRING(time, ' ', -1) ASC";
+	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
+	$query = "SELECT time FROM listing WHERE name = :name ".$isLeet."ORDER BY SUBSTRING(time from 12) ASC";
 	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
