@@ -56,7 +56,9 @@ function getAvgTime() {
 		$total += intval(str_replace('.', '', str_replace(':', '', $row['time'])));
 		$count++;
     }
-	return $total / $count;
+	$avg = $total / $count;
+	$result = substr($avg,0,2).':'.substr($avg,2,2).':'.substr($avg,4,2).'.'.substr($avg,6);
+	return $result;
 }
 function hasAchievement($achievement) {
 	return false;
