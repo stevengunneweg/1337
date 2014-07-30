@@ -32,7 +32,7 @@ function getTries() {
 	$stmt = $dbh->prepare($tries);
 	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
-	return json_encode($result[0])."yups";
+	return $result[0][0];
 }
 function hasAchievement($achievement) {
 	return false;
