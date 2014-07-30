@@ -30,9 +30,9 @@ function getTries() {
 	global $dbh;
 
 	$stmt = $dbh->prepare($tries);
-	$stmt->execute(array(':name'=>"Steven"));
+	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
-	return json_encode($result)."yups";
+	return json_encode($result[0])."yups";
 }
 function hasAchievement($achievement) {
 	return false;
