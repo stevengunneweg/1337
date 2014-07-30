@@ -148,7 +148,7 @@ function hasAchievement($achievement) {
 				</tr>
 				<tr>
 					<td>avg. post time</td>
-					<td>&lt;amount&gt;</td>
+					<td><?php echo getAvgTime(); ?></td>
 				</tr>
 			</table>
 		</div>
