@@ -53,6 +53,7 @@ function getAvgTime() {
 	$total = 0;
 	$count = 0;
 	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		echo $row;
 		$total += intval(str_replace('.', '', str_replace(':', '', $row[0])));
 		$count++;
     }
