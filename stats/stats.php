@@ -36,7 +36,7 @@ function getTries() {
 function getBestTry() {
 	global $dbh;
 
-	$query = "SELECT time FROM listing WHERE name = :name ORDER BY time ASC";
+	$query = "SELECT time FROM listing WHERE name = :name ORDER BY SUBSTRING(time, ' ', -1) ASC";
 	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
