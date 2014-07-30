@@ -43,7 +43,7 @@ function getBestTry() {
 	$result = $stmt->fetchAll();
 	return $result[0][0];
 }
-/*function getAvgTime() {
+function getAvgTime() {
 	global $dbh;
 
 	$query = "SELECT SUBSTRING(time FROM 12) FROM listing WHERE name = :name";
@@ -53,11 +53,11 @@ function getBestTry() {
 	$total = 0;
 	$count = 0;
 	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-		$total += intval(str_replace('.', '', str_replace(':', '', $row[0]));
+		$total += intval(str_replace('.', '', str_replace(':', '', $row[0])));
 		$count++;
     }
 	return $total / $count;
-}*/
+}
 function hasAchievement($achievement) {
 	return false;
 }
