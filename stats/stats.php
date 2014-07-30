@@ -17,8 +17,6 @@ include('../db.php');
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
 
-$tries = "SELECT count(*) FROM listing WHERE name = :name";
-
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
 } catch (PDOException $e) {
@@ -27,9 +25,19 @@ try {
 }
 
 function getTries() {
-	global $dbh, $tries;
+	global $dbh;
 
-	$stmt = $dbh->prepare($tries);
+	$query = "SELECT count(*) FROM listing WHERE name = :name";
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name'=>'Steven'));
+	$result = $stmt->fetchAll();
+	return $result[0][0];
+}
+function getBestTry() {
+	global $dbh;
+
+	$query = "SELECT time FROM listing WHERE name = :name ORDER BY time ASC";
+	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>'Steven'));
 	$result = $stmt->fetchAll();
 	return $result[0][0];
@@ -37,15 +45,6 @@ function getTries() {
 function hasAchievement($achievement) {
 	return false;
 }
-
-/*function getScore($query) {
-	global $dbh;
-
-	$stmt = $dbh->prepare($query);
-	$stmt->execute();
-	$result = $stmt->fetchAll();
-	echo json_encode($result);
-}*/
 ?>
 
 <!DOCTYPE html>
@@ -121,7 +120,7 @@ function hasAchievement($achievement) {
 				</tr>
 				<tr>
 					<td>best attempt</td>
-					<td>&lt;amount&gt;</td>
+					<td><?php echo getBestTry(); ?></td>
 				</tr>
 				<tr>
 					<td>current winstreak</td>
