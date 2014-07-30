@@ -46,15 +46,15 @@ function getBestTry() {
 function getAvgTime() {
 	global $dbh;
 
-	$query = "SELECT SUBSTRING(time FROM 12) FROM listing WHERE name = :name";
+	$query = "SELECT SUBSTRING(time FROM 12) as time FROM listing WHERE name = :name";
 	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>'Steven'));
 	
 	$total = 0;
 	$count = 0;
 	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-		print_r($row);
-		$total += intval(str_replace('.', '', str_replace(':', '', $row[0])));
+		print_r($row['time']);
+		$total += intval(str_replace('.', '', str_replace(':', '', $row['time'])));
 		$count++;
     }
 	return $total / $count;
