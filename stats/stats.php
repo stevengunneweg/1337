@@ -27,7 +27,7 @@ try {
 }
 
 function getTries() {
-	global $dbh;
+	global $dbh, $tries;
 
 	$stmt = $dbh->prepare($tries);
 	$stmt->execute(array(':name'=>'Steven'));
