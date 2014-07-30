@@ -12,7 +12,7 @@ current winstreak
 average post time
 */
 
-/*include('db.php');
+include('db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
@@ -33,7 +33,19 @@ try {
 	die();
 }
 
-function getScore($query) {
+function getTries() {
+	global $dbh;
+
+	$stmt = $dbh->prepare($tries);
+	$stmt->execute(array(':name'=>"Steven"));
+	$result = $stmt->fetchAll();
+	return json_encode($result);
+}
+function hasAchievement($achievement) {
+	return false;
+}
+
+/*function getScore($query) {
 	global $dbh;
 
 	$stmt = $dbh->prepare($query);
@@ -46,7 +58,7 @@ function getScore($query) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>1337 Stats</title>
+	<title>1337 Stats - &lt;Name&gt;</title>
 	<style type="text/css">
 		body, html {
 			margin: 0px;
@@ -96,7 +108,7 @@ function getScore($query) {
 			<table>
 				<tr>
 					<td>tries</td>
-					<td>&lt;amount&gt;</td>
+					<td><?php echo getTries(); ?></td>
 				</tr>
 				<tr>
 					<td>times 1st</td>
