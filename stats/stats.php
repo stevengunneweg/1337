@@ -16,7 +16,7 @@ include('../db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
-$name = $_POST['name'];
+$name = $_GET['name'];
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
