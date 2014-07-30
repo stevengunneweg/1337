@@ -69,7 +69,7 @@ function hasAchievement($achievement) {
 <!DOCTYPE html>
 <html>
 <head>
-	<title>1337 Stats - &lt;Name&gt;</title>
+	<title>1337 Stats - <?php echo $name; ?></title>
 	<style type="text/css">
 		body, html {
 			margin: 0px;
@@ -113,7 +113,7 @@ function hasAchievement($achievement) {
 </head>
 <body>
 	<div id="container">
-		<h1>&lt;Name&gt;</h1>
+		<h1><?php echo $name; ?></h1>
 		<div id="stats">
 			<h2>Stats</h2>
 			<table>
