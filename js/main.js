@@ -25,7 +25,7 @@ function showError(e) {
 	error_happened = true;
 }
 function send() {
-	ga('send', 'event', 'button', 'click', '1337post', Date.now());
+	ga('send', 'event', 'button', 'click', '1337post', ((new Date()).getHours() * 100) + (new Date()).getMinutes());
 	if (!document.getElementById('name_field').value) {
 		alert('fill in a name!\nHURRRYYY!!');
 		document.getElementById('name_field').focus();
