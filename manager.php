@@ -13,8 +13,8 @@ $order = " ORDER BY moment ASC LIMIT 30";
 
 $queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order;
 $queryYesterday = $select." WHERE DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order;
-$queryWeek = $select." WHERE WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) ".$isLeet.$order;
-$queryMonth = $select." WHERE MONTH(time) = MONTH(CURDATE()) ".$isLeet.$order;
+$queryWeek = $select." WHERE WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryMonth = $select." WHERE MONTH(time) = MONTH(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
 $queryYear = $select." WHERE YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
 $queryTop = $select."WHERE true".$isLeet.$order;
 
