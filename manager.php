@@ -99,6 +99,9 @@ function pushScore($name) {
 	} else if (strlen($name) < 2) {
 		print 'Name is too short';
 		return;
+	} else if (strpos($_SERVER['HTTP_REFERER'], '1337online.com') === false) {
+		print 'You sneaky boy...';
+		return;
 	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
 		print 'You need to wait 20 after your previous post';
 		return;
