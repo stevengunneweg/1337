@@ -5,11 +5,9 @@ date_default_timezone_set("Europe/Amsterdam");
 
 $dbh = null;
 
-
 $select = "SELECT name, time, SUBSTRING_INDEX(time, ' ', 1) AS day, SUBSTRING_INDEX(time, ' ', -1) AS moment FROM listing ";
 $isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
 $order = " ORDER BY moment ASC LIMIT 30";
-
 
 $queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order;
 $queryYesterday = $select." WHERE DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order;
@@ -109,14 +107,14 @@ function pushScore($name) {
 	global $dbh;
 
 	$_time = _getCurrentServerTime();
-	
+
 	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
 	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
 	print 'ok';
 }
 
 function getServerTime() {
-	echo _getCurrentServerTime();	
+	echo _getCurrentServerTime();
 }
 
 function newUser($data) {
@@ -125,7 +123,7 @@ function newUser($data) {
 	$data = json_decode($data);
 	$name = $data[0];
 	$pass = $data[1];
-	
+
 	$stmt = $dbh->prepare('SELECT name FROM users WHERE name = :name');
 	$stmt->execute(array(':name'=>$name));
 	$result = $stmt->fetchAll();
