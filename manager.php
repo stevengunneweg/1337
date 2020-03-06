@@ -9,12 +9,12 @@ $select = "SELECT name, time, SUBSTRING_INDEX(time, ' ', 1) AS day, SUBSTRING_IN
 $isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
 $order = " ORDER BY moment ASC LIMIT 30";
 
-$queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order." AND DELETED <> 1";
-$queryYesterday = $select." WHERE DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order." AND DELETED <> 1";
-$queryWeek = $select." WHERE WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order." AND DELETED <> 1";
-$queryMonth = $select." WHERE MONTH(time) = MONTH(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order." AND DELETED <> 1";
-$queryYear = $select." WHERE YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order." AND DELETED <> 1";
-$queryTop = $select."WHERE true".$isLeet.$order." AND DELETED <> 1";
+$queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order;
+$queryYesterday = $select." WHERE DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order;
+$queryWeek = $select." WHERE WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryMonth = $select." WHERE MONTH(time) = MONTH(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryYear = $select." WHERE YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryTop = $select."WHERE true".$isLeet.$order;
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
