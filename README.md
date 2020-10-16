@@ -1,12 +1,11 @@
-1337
-====
+# 1337
 
 A competition game for the 1337 time
 
-Click the button on exactly 13:37 before everyone else.
+## Description
 
-**In the future this project may be replaced**
+Click the button on exactly 13:37 before everyone else. Please, no cheating with bots...
 
-Demo: https://dev.1337online.com/
+## Contribution
 
-Repository: https://gitlab.com/stevengunneweg-opensource/1337online
+Feel free to create a pull request
