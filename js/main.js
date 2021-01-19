@@ -114,7 +114,7 @@ function addToList(table, name, timestamp, day) {
 
 	var cell_name = row.insertCell(-1);
 	cell_name.className = 'name';
-	cell_name.innerHTML = '<a href="stats/stats.php?name=' + name + '">' + name + '</a>';
+	cell_name.innerHTML = '<a href="/stats.php?name=' + name + '">' + name + '</a>';
 
 	var cell_score = row.insertCell(-1);
 	cell_score.className = 'score';
@@ -166,7 +166,7 @@ function apiCall(action, data, succes, error) {
 	if (!error_happened) {
 		$.ajax({
 		    data: 'action=' + action + '&data=' + data,
-			url: 'manager.php',
+			url: 'api/manager.php',
 			method: 'POST', // or GET
 			success: function(result) {
 				if (succes) {
