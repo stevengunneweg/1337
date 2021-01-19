@@ -1,4 +1,3 @@
-
 <!DOCTYPE HTML>
 <html>
 <head>
@@ -9,7 +8,7 @@
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
 	<script src="js/main.js"></script>
 	<script src="js/cookie.js"></script>
-	
+
 	<link rel='stylesheet' href='css/style.css' type='text/css'>
 </head>
 <body>
@@ -33,18 +32,15 @@
 		<table id="table_score">
 		</table>
 	</div>
-
 	<div id="name">
 		<input id="name_field" placeholder="name"></input>
 	</div>
 	<div id="button">
 		<button onclick="send()">1337</button>
 	</div>
-
-	<div>
-		Click <a href="features.html" target="blanc">here</a> to see possible future features<br/>
+	<div class="info">
 		<p>
-			if you do not get it, <a href="info.html" target="blanc">read me</a>
+			If you do not get what this site is about, <a href="info.html" target="blanc">read me</a>
 		</p>
 	</div>
 </body>

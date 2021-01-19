@@ -1,22 +1,20 @@
 <?php
-include('db.php');
+include('../db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 
 $dbh = null;
 
-
 $select = "SELECT name, time, SUBSTRING_INDEX(time, ' ', 1) AS day, SUBSTRING_INDEX(time, ' ', -1) AS moment FROM listing ";
 $isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
 $order = " ORDER BY moment ASC LIMIT 30";
 
-
-$queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order;
-$queryYesterday = $select." WHERE DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order;
-$queryWeek = $select." WHERE WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) ".$isLeet.$order;
-$queryMonth = $select." WHERE MONTH(time) = MONTH(CURDATE()) ".$isLeet.$order;
-$queryYear = $select." WHERE YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
-$queryTop = $select."WHERE true".$isLeet.$order;
+$queryDay = $select." WHERE deleted IS NULL AND DATE(time) = CURDATE() ".$isLeet.$order;
+$queryYesterday = $select." WHERE deleted IS NULL AND DATE(time) = DATE_ADD(CURDATE(), INTERVAL -1 DAY) ".$isLeet.$order;
+$queryWeek = $select." WHERE deleted IS NULL AND WEEKOFYEAR(time) = WEEKOFYEAR(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryMonth = $select." WHERE deleted IS NULL AND MONTH(time) = MONTH(CURDATE()) AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryYear = $select." WHERE deleted IS NULL AND YEAR(time) = YEAR(CURDATE()) ".$isLeet.$order;
+$queryTop = $select."WHERE deleted IS NULL AND true".$isLeet.$order;
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
@@ -101,6 +99,9 @@ function pushScore($name) {
 	} else if (strlen($name) < 2) {
 		print 'Name is too short';
 		return;
+	} else if (strpos($_SERVER['HTTP_REFERER'], '1337online.com') === false) {
+		print 'You sneaky boy...';
+		return;
 	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
 		print 'You need to wait 20 after your previous post';
 		return;
@@ -109,14 +110,14 @@ function pushScore($name) {
 	global $dbh;
 
 	$_time = _getCurrentServerTime();
-	
+
 	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
 	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
 	print 'ok';
 }
 
 function getServerTime() {
-	echo _getCurrentServerTime();	
+	echo _getCurrentServerTime();
 }
 
 function newUser($data) {
@@ -125,7 +126,7 @@ function newUser($data) {
 	$data = json_decode($data);
 	$name = $data[0];
 	$pass = $data[1];
-	
+
 	$stmt = $dbh->prepare('SELECT name FROM users WHERE name = :name');
 	$stmt->execute(array(':name'=>$name));
 	$result = $stmt->fetchAll();

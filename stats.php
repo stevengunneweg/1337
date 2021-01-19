@@ -16,8 +16,7 @@ include('../db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
-
-$tries = "SELECT count(*) FROM listing WHERE name = :name";
+$name = $_GET['name'];
 
 try {
 	$dbh = new PDO('mysql:host='.$host.';dbname='.$db_name.';port:3306', $username, $pass);
@@ -27,31 +26,50 @@ try {
 }
 
 function getTries() {
-	global $dbh;
+	global $dbh, $name;
 
-	$stmt = $dbh->prepare($tries);
-	$stmt->execute(array(':name'=>"Steven"));
+	$query = "SELECT count(*) FROM listing WHERE name = :name";
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name'=>$name));
 	$result = $stmt->fetchAll();
-	return json_encode($result)."yups";
+	return $result[0][0];
+}
+function getBestTry() {
+	global $dbh, $name;
+
+	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
+	$query = "SELECT time FROM listing WHERE name = :name ".$isLeet."ORDER BY SUBSTRING(time FROM 12) ASC";
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name'=>$name));
+	$result = $stmt->fetchAll();
+	return $result[0][0];
+}
+function getAvgTime() {
+	global $dbh, $name;
+
+	$query = "SELECT SUBSTRING(time FROM 12) as time FROM listing WHERE name = :name";
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name'=>$name));
+	
+	$total = 0;
+	$count = 0;
+	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+		$total += intval(str_replace('.', '', str_replace(':', '', $row['time'])));
+		$count++;
+    }
+	$avg = $total / $count;
+	$result = substr($avg,0,2).':'.substr($avg,2,2).':'.substr($avg,4,2).'.'.substr($avg,6);
+	return $result;
 }
 function hasAchievement($achievement) {
 	return false;
 }
-
-/*function getScore($query) {
-	global $dbh;
-
-	$stmt = $dbh->prepare($query);
-	$stmt->execute();
-	$result = $stmt->fetchAll();
-	echo json_encode($result);
-}*/
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
-	<title>1337 Stats - &lt;Name&gt;</title>
+	<title>1337 Stats - <?php echo $name; ?></title>
 	<style type="text/css">
 		body, html {
 			margin: 0px;
@@ -95,7 +113,7 @@ function hasAchievement($achievement) {
 </head>
 <body>
 	<div id="container">
-		<h1>&lt;Name&gt;</h1>
+		<h1><?php echo $name; ?></h1>
 		<div id="stats">
 			<h2>Stats</h2>
 			<table>
@@ -121,7 +139,7 @@ function hasAchievement($achievement) {
 				</tr>
 				<tr>
 					<td>best attempt</td>
-					<td>&lt;amount&gt;</td>
+					<td><?php echo getBestTry(); ?></td>
 				</tr>
 				<tr>
 					<td>current winstreak</td>
@@ -133,7 +151,7 @@ function hasAchievement($achievement) {
 				</tr>
 				<tr>
 					<td>avg. post time</td>
-					<td>&lt;amount&gt;</td>
+					<td><?php echo getAvgTime(); ?></td>
 				</tr>
 			</table>
 		</div>

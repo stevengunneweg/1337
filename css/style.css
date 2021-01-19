@@ -69,10 +69,12 @@ html, body {
 /* DAYS */
 #today {
 	float: left;
+	margin-right: 14px;
 	border-right: 1px solid #ccc;
 }
 #yesterday {
 	float: right;
+	margin-left: 14px;
 	border-left: 1px solid #ccc;
 }
 
@@ -85,3 +87,8 @@ html, body {
 		background: #00cef3;
 		color: #000;
 	}
+
+/* INFO */
+.info {
+	padding: 14px;
+}
