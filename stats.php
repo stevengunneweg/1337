@@ -12,7 +12,7 @@ current winstreak
 average post time
 */
 
-include('../db.php');
+include('./db.php');
 
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
@@ -50,7 +50,7 @@ function getAvgTime() {
 	$query = "SELECT SUBSTRING(time FROM 12) as time FROM listing WHERE name = :name";
 	$stmt = $dbh->prepare($query);
 	$stmt->execute(array(':name'=>$name));
-	
+
 	$total = 0;
 	$count = 0;
 	while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -121,41 +121,41 @@ function hasAchievement($achievement) {
 					<td>tries</td>
 					<td><?php echo getTries(); ?></td>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td>times 1st</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
-				<tr>
+				</tr> -->
+				<!-- <tr>
 					<td>times 2nd</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
-				<tr>
+				</tr> -->
+				<!-- <tr>
 					<td>times 3rd</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
-				<tr>
+				</tr> -->
+				<!-- <tr>
 					<td>winstreak</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td>best attempt</td>
 					<td><?php echo getBestTry(); ?></td>
 				</tr>
-				<tr>
+				<!-- <tr>
 					<td>current winstreak</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
-				<tr>
+				</tr> -->
+				<!-- <tr>
 					<td>current poststreak</td>
 					<td>&lt;amount&gt;</td>
-				</tr>
+				</tr> -->
 				<tr>
 					<td>avg. post time</td>
 					<td><?php echo getAvgTime(); ?></td>
 				</tr>
 			</table>
 		</div>
-		<div id="achievements">
+		<!-- <div id="achievements">
 			<h2>Achievements</h2>
 			<div id="achievement_list">
 				<div class="achievement" style="background: url(../assets/first.png) no-repeat; background-size: 100% 100%; background-position: center; background-color: #007fff;"></div>
@@ -172,7 +172,7 @@ function hasAchievement($achievement) {
 				<div class="achievement"></div>
 				<div class="achievement"></div>
 			</div>
-		</div>
+		</div> -->
 	</div>
 </body>
 </html>
