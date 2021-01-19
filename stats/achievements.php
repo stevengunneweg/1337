@@ -23,9 +23,9 @@ include('db.php');
 date_default_timezone_set("Europe/Amsterdam");
 $dbh = null;
 
-$achievements = {
-	"1st": ""
-}
+$achievements = [
+	"1st" => ""
+];
 
 $queryDay = $select." WHERE DATE(time) = CURDATE() ".$isLeet.$order;
 
