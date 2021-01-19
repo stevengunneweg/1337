@@ -2,14 +2,14 @@
 /*
 ---- Stats ----
 
-amount of tries
+✅ amount of tries
 times 1st
 times 2nd
 times 3rd
 best winstreak
-best attempt
+✅ best attempt
 current winstreak
-average post time
+✅ average post time
 */
 
 include('./db.php');
@@ -70,6 +70,9 @@ function hasAchievement($achievement) {
 <html>
 <head>
 	<title>1337 Stats - <?php echo $name; ?></title>
+	<?php include_once("g_analytics.php") ?>
+	<link rel="shortcut icon" href="assets/favicon.ico"/>
+
 	<style type="text/css">
 		body, html {
 			margin: 0px;
