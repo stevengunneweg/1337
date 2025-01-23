@@ -20,8 +20,8 @@ function getActiveUsers() {
 		$statement->execute(array(':ip'=>$_ip));
 		$existingUser = $statement->fetch();
 		if ($existingUser && $existingUser['id'] > 0) {
-			$stmt = $dbh->prepare('UPDATE active_users SET time=:time WHERE id=:id');
-			$stmt->execute(array(':time'=>$_time, ':id'=>$existingUser['id']));
+			$stmt = $dbh->prepare('UPDATE active_users SET time=:time, username=:name WHERE id=:id');
+			$stmt->execute(array(':time'=>$_time, ':name'=>$name, ':id'=>$existingUser['id']));
 		} else {
 			$stmt = $dbh->prepare('INSERT INTO active_users (username, time, ip) VALUES (:name, :time, :ip)');
 			$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_ip));
@@ -29,10 +29,10 @@ function getActiveUsers() {
 	}
 
 	// get amount of active users
-	$statement = $dbh->prepare('SELECT COUNT(ip) as count, time FROM active_users WHERE time >= :time ORDER BY time DESC');
+	$statement = $dbh->prepare('SELECT DISTINCT username, time FROM active_users WHERE time >= :time ORDER BY time DESC');
 	$statement->execute(array(':time'=>$_timeOffset));
-	$result = $statement->fetch();
-	$activeUsers = $result['count'];
+	$result = $statement->fetchAll(PDO::FETCH_COLUMN, 0);
+	$activeUsers = $result;
 	return $activeUsers;
 }
 ?>

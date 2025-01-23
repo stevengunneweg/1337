@@ -10,7 +10,7 @@ dayjs.extend(weekOfYear);
 
 const time = ref('--:--:--');
 const username = ref('');
-const activeUserCount = ref(0);
+const activeUsers = ref<Array<string>>([]);
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const leaderboards: Ref<{ [key: string]: any }> = ref({});
 const feedbackSuccess = ref('');
@@ -88,7 +88,7 @@ function getLeaderboardThrottled() {
 }
 
 async function getActiveUsers() {
-	activeUserCount.value = await ApiService.getActiveUsers(username.value);
+	activeUsers.value = await ApiService.getActiveUsers(username.value);
 }
 
 async function submit(event: Event) {
@@ -115,7 +115,7 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 			<div
 				class="border-ui-200 max-lg:bg-tertiary-100 dark:max-lg:bg-tertiary-900 w-full max-w-96 shrink grow max-lg:order-2 max-lg:mx-auto lg:max-w-[min(380px,calc((100%-423px-32px)/2))] lg:border-r"
 			>
-				<div class="flex flex-col max-lg:pt-4 lg:max-h-[100dvh]">
+				<div class="flex h-full flex-col max-lg:pt-4 lg:max-h-[100dvh]">
 					<div class="p-4">
 						<div class="text-center text-3xl font-bold">Today</div>
 						<div class="text-center text-lg">{{ today }}</div>
@@ -123,7 +123,7 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 							{{ time }}
 						</div>
 					</div>
-					<div class="scrollbox">
+					<div class="scrollbox grow">
 						<div class="p-4 pt-1 lg:shrink lg:grow lg:overflow-auto">
 							<div v-if="!leaderboards['default']?.length" class="text-center">
 								This list is currently empty
@@ -144,6 +144,31 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 							</div>
 						</div>
 					</div>
+					<div
+						class="bg-ui-100 dark:bg-ui-800 lg:border-ui-900 lg:dark:border-ui-100 lg:border-t"
+					>
+						<div class="flex items-center gap-4 p-4 font-bold">
+							<div>
+								Currently online
+								<span class="text-sm">({{ activeUsers.length }})</span>
+							</div>
+							<div
+								class="bg-success-500 outline-success-500 inline-block size-2 animate-pulse rounded-full outline-1 outline-offset-2"
+							></div>
+						</div>
+						<div class="scrollbox-ui-100 max-h-[25dvh] p-4 pt-0 lg:h-[25dvh]">
+							<div v-if="!activeUsers.length">No users online</div>
+							<div v-for="user of activeUsers" :key="user">
+								<RouterLink
+									class="outline-secondary-500 dark:outline-secondary-100 max-w-[calc(100%-140px)] overflow-hidden rounded text-ellipsis whitespace-nowrap underline outline-0 transition-all focus:outline-2 focus:outline-offset-1"
+									:to="'/stats/' + user"
+									:title="user"
+								>
+									{{ user }}
+								</RouterLink>
+							</div>
+						</div>
+					</div>
 				</div>
 			</div>
 			<div class="grow max-lg:order-1 lg:py-8">
@@ -161,11 +186,16 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 						</span>
 					</ViewportComponent>
 					<form class="flex max-w-[280px] flex-col gap-4" v-on:submit="submit($event)">
-						<div class="flex items-center gap-2">
-							<div
-								class="bg-success-500 outline-success-500 inline-block size-2 animate-pulse rounded-full outline-1 outline-offset-2"
-							></div>
-							{{ activeUserCount }} user{{ activeUserCount === 1 ? '' : 's' }} online
+						<div class="relative">
+							<div class="flex items-center gap-2">
+								<div
+									class="bg-success-500 outline-success-500 inline-block size-2 animate-pulse rounded-full outline-1 outline-offset-2"
+								></div>
+								{{ activeUsers.length }} user{{
+									activeUsers.length === 1 ? '' : 's'
+								}}
+								online
+							</div>
 						</div>
 						<input
 							placeholder="name"

@@ -129,13 +129,34 @@ body {
 
 		background:
 		/* Shadow covers */
-			linear-gradient(white 30%, rgba(255, 255, 255, 0)),
-			linear-gradient(rgba(255, 255, 255, 0), white 70%) 0 100%,
+			linear-gradient(var(--color-white) 30%, rgba(255, 255, 255, 0)),
+			linear-gradient(rgba(255, 255, 255, 0), var(--color-white) 70%) 0 100%,
 			/* Shadows */
 				radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)),
 			radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) 0 100%;
 		background-repeat: no-repeat;
-		background-color: white;
+		background-color: var(--color-white);
+		background-size:
+			100% 40px,
+			100% 40px,
+			100% 14px,
+			100% 14px;
+
+		/* Opera doesn't support this in the shorthand */
+		background-attachment: local, local, scroll, scroll;
+	}
+	.scrollbox-ui-100 {
+		overflow: auto;
+
+		background:
+		/* Shadow covers */
+			linear-gradient(var(--color-ui-100) 30%, rgba(255, 255, 255, 0)),
+			linear-gradient(rgba(255, 255, 255, 0), var(--color-ui-100) 70%) 0 100%,
+			/* Shadows */
+				radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)),
+			radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) 0 100%;
+		background-repeat: no-repeat;
+		background-color: var(--color-ui-100);
 		background-size:
 			100% 40px,
 			100% 40px,
@@ -160,6 +181,29 @@ body {
 					100%;
 			background-repeat: no-repeat;
 			background-color: var(--color-ui-900);
+			background-size:
+				100% 40px,
+				100% 40px,
+				100% 14px,
+				100% 14px;
+
+			/* Opera doesn't support this in the shorthand */
+			background-attachment: local, local, scroll, scroll;
+		}
+
+		.scrollbox-ui-100 {
+			overflow: auto;
+
+			background:
+				/* Shadow covers */
+				linear-gradient(var(--color-ui-800) 30%, rgba(255, 255, 255, 0)),
+				linear-gradient(rgba(255, 255, 255, 0), var(--color-ui-800) 70%) 0 100%,
+				/* Shadows */
+					radial-gradient(farthest-side at 50% 0, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)),
+				radial-gradient(farthest-side at 50% 100%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) 0
+					100%;
+			background-repeat: no-repeat;
+			background-color: var(--color-ui-800);
 			background-size:
 				100% 40px,
 				100% 40px,
