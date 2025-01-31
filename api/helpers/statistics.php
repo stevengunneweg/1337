@@ -78,6 +78,36 @@ function getBestAttempt($username) {
 	return $result['time'];
 }
 
+function getLaatAttempt($username) {
+	global $dbh;
+	global $env;
+
+	$query = "SELECT time
+		FROM listing
+		WHERE name = :name
+			AND (HOUR(time) = 14 AND MINUTE(time) = 47)
+			AND ISNULL(deleted)
+		ORDER BY SUBSTRING(time FROM 12) ASC
+	";
+	if ($env['VITE_ENVIRONMENT'] == 'local') {
+		$query = "SELECT time
+			FROM listing
+			WHERE name = :name
+				AND (CAST(substr(time, 12, 2) as INTEGER) = 14 AND CAST(substr(time, 15, 2) as INTEGER) = 47)
+				AND IFNULL(deleted, 1)
+			ORDER BY substr(time, 12) ASC
+		";
+	}
+	$stmt = $dbh->prepare($query);
+	$stmt->execute(array(':name' => $username));
+	$result = $stmt->fetch();
+
+	if (!$result) {
+		return '';
+	}
+	return $result['time'];
+}
+
 function getAverageTime($username) {
 	global $dbh;
 	global $env;

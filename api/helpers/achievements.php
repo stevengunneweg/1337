@@ -60,6 +60,7 @@ function getUserAchievements($username) {
 	* - 3 day streak
 	* - 5 day streak
 	* - 10 day streak
+	* - 14:47 (late)
 	*/
 	$userStreak = getUserStreak($username)['longest'];
 
@@ -72,6 +73,7 @@ function getUserAchievements($username) {
 		'streak_3' => $userStreak >= 3,
 		'streak_5' => $userStreak >= 5,
 		'streak_10' => $userStreak >= 10,
+		'late' => getLaatAttempt($username) != '',
 	];
 }
 ?>
