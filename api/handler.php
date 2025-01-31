@@ -139,23 +139,26 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$data = json_decode(file_get_contents('php://input'), true);
 			$name = htmlspecialchars($data['name']);
-			$status = registerPost($name);
+			$result = registerPost($name);
 
-			if ($status !== 'ok') {
+			if ($result['status'] !== 'ok') {
 				http_response_code(406);
 				print json_encode([
-					'data' => $status,
+					'data' => $result,
 				]);
 				exit(0);
 			}
 
 			print json_encode([
-				'data' => 'Your post was registered',
+				'data' => [
+					'status' => 'Your post was registered',
+					'time' => $result['time'],
+				],
 			]);
 		} else {
 			http_response_code(405);
 			print json_encode([
-				'data' => 'Method not allowed',
+				'data' => ['status' => 'Method not allowed'],
 			]);
 		}
 		break;

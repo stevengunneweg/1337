@@ -97,10 +97,10 @@ async function submit(event: Event) {
 	event.preventDefault();
 	ApiService.postEntry(username.value)
 		.then((response) => {
-			feedbackSuccess.value = response.data.data;
+			feedbackSuccess.value = `${response.data.data.status}<br/>at <span class="font-bold">${response.data.data.time}</span>`;
 		})
 		.catch((error) => {
-			feedbackError.value = error.response.data.data;
+			feedbackError.value = error.response.data.data.status;
 		});
 }
 
@@ -217,9 +217,8 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 								'text-success-500': feedbackSuccess,
 								'text-error-500': feedbackError,
 							}"
-						>
-							{{ feedbackSuccess || feedbackError }}&nbsp;
-						</div>
+							v-html="`${feedbackSuccess || feedbackError}&nbsp;`"
+						></div>
 					</form>
 					<div>
 						If you do not get what this site is about,
