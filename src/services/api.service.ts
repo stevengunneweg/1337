@@ -12,6 +12,7 @@ export interface Statistics {
 		third: boolean;
 		v1_user: boolean;
 		v2_user: boolean;
+		late: boolean;
 	};
 	stats: {
 		amount_first: number;

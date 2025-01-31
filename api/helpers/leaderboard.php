@@ -77,8 +77,6 @@ function hasRecordToday($ip) {
 	global $dbh;
 	global $env;
 
-	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
-
 	if ($env['VITE_ENVIRONMENT'] == 'local') {
 		$stmt = $dbh->prepare("SELECT count(ip) as ip_count, time, time(time) as timeRecord, time('now', 'localtime', '-20 seconds') as timeOffset FROM listing WHERE date(time) = date('now') AND timeRecord > timeOffset AND ip = '".$ip."'");
 	} else {

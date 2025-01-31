@@ -95,6 +95,9 @@ async function getUserStats(username: string) {
 				<div v-if="stats?.achievements.streak_10">🔟 10 day streak</div>
 				<div v-if="stats?.achievements.v1_user">🏆 User since version 1</div>
 				<div v-if="stats?.achievements.v2_user">🏆 User since version 2</div>
+				<div v-if="stats?.achievements.late">
+					🕑 You've been late (1447 or "laat" means "late" in Dutch)
+				</div>
 			</div>
 		</div>
 	</div>
