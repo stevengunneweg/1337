@@ -1,6 +1,13 @@
 import axios from 'axios';
 
 export type LeaderboardOptions = 'yesterday' | 'week' | 'month' | 'year' | 'top';
+export const AllowedLeaderboardOptions: Array<LeaderboardOptions> = [
+	'yesterday',
+	'week',
+	'month',
+	'year',
+	'top',
+];
 
 export interface Statistics {
 	achievements: {

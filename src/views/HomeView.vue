@@ -1,12 +1,18 @@
 <script setup lang="ts">
 import ViewportComponent from '@/components/ViewportComponent.vue';
-import { ApiService, type LeaderboardOptions } from '@/services/api.service';
+import {
+	AllowedLeaderboardOptions,
+	ApiService,
+	type LeaderboardOptions,
+} from '@/services/api.service';
 import dayjs from 'dayjs';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
 import { onMounted, onUnmounted, ref, watch, type Ref } from 'vue';
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 
 dayjs.extend(weekOfYear);
+const route = useRoute();
+const router = useRouter();
 
 const time = ref('--:--:--');
 const username = ref('');
@@ -35,8 +41,23 @@ watch(leaderboardVisible, (value) => {
 	}
 });
 
+watch(leaderboardVisible, (value) => {
+	console.log('leaderboardVisible', value);
+	if (value === 'yesterday') {
+		router.replace({});
+	} else {
+		router.replace({ query: { leaderboard: value } });
+	}
+});
+
 onMounted(() => {
 	username.value = localStorage.getItem('username') || '';
+
+	if (AllowedLeaderboardOptions.includes(route.query.leaderboard as LeaderboardOptions)) {
+		leaderboardVisible.value = route.query.leaderboard as LeaderboardOptions;
+	} else if (route.query.leaderboard) {
+		router.replace({});
+	}
 
 	getCurrentTime();
 	intervals.push(
