@@ -31,9 +31,21 @@
 // self.__precacheManifest = [].concat(self.__precacheManifest || []);
 // workbox.precaching.precacheAndRoute(self.__precacheManifest, {});
 
-navigator.serviceWorker.getRegistrations().then((registrations) => {
-	for (const registration of registrations) {
-		registration.unregister();
-	}
+/**
+ * Self-Destroy service worker
+ */
+
+self.addEventListener('install', function () {
+	self.skipWaiting();
 });
-window.location.reload();
+
+self.addEventListener('activate', function () {
+	self.registration
+		.unregister()
+		// .then(function () {
+		// 	return self.clients.matchAll();
+		// })
+		.then(function (clients) {
+			clients.forEach((client) => client.navigate('https://1337online.com/'));
+		});
+});
