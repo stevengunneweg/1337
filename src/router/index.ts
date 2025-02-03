@@ -24,7 +24,11 @@ const router = createRouter({
 			redirect: { name: 'home' },
 		},
 	],
-	scrollBehavior: (_to, _from, savedPosition) => {
+	scrollBehavior: (to, from, savedPosition) => {
+		// Skip if destination full path has query parameters and differs in no other way from previous
+		if (from && to.fullPath.split('?')[0] == from.fullPath.split('?')[0]) {
+			return;
+		}
 		if (savedPosition) {
 			return savedPosition;
 		} else {
