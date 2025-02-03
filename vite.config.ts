@@ -14,10 +14,6 @@ export default defineConfig({
 		viteStaticCopy({
 			targets: [
 				{
-					src: 'manifest.json',
-					dest: './',
-				},
-				{
 					src: 'robots.txt',
 					dest: './',
 				},
