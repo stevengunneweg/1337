@@ -118,7 +118,15 @@ async function submit(event: Event) {
 	event.preventDefault();
 	ApiService.postEntry(username.value)
 		.then((response) => {
-			feedbackSuccess.value = `${response.data.data.status}<br/>at <span class="font-bold">${response.data.data.time}</span>`;
+			if (!response.data.data.time.includes('13:37')) {
+				if (response.data.data.time?.substr(0, 5) < '13:37') {
+					feedbackError.value = `You were too early<br/>posted at <span class="font-bold">${response.data.data.time}</span>`;
+				} else {
+					feedbackError.value = `You were too late<br/>posted at <span class="font-bold">${response.data.data.time}</span>`;
+				}
+			} else {
+				feedbackSuccess.value = `${response.data.data.status}<br/>at <span class="font-bold">${response.data.data.time}</span>`;
+			}
 		})
 		.catch((error) => {
 			feedbackError.value = error.response.data.data.status;
