@@ -44,4 +44,29 @@ if ($env['VITE_ENVIRONMENT'] == 'local') {
 		ip VARCHAR(128)
 	)')->execute();
 }
+
+// Setup "accounts"
+if ($env['VITE_ENVIRONMENT'] == 'local') {
+	$dbh->prepare('CREATE TABLE IF NOT EXISTS "accounts" (
+		"id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+		"username" TEXT,
+		"email" TEXT,
+		"password" TEXT,
+		"created_at" TEXT,
+		"last_login" TEXT,
+		"blocked" INTEGER DEFAULT 0,
+		"deleted" INTEGER DEFAULT 0
+	)')->execute();
+} else {
+	$dbh->prepare('CREATE TABLE IF NOT EXISTS accounts (
+		id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
+		username VARCHAR(255),
+		email VARCHAR(255),
+		password VARCHAR(255),
+		created_at VARCHAR(255),
+		last_login VARCHAR(255),
+		"blocked" BOOLEAN DEFAULT false,
+		"deleted" BOOLEAN DEFAULT false
+	)')->execute();
+}
 ?>

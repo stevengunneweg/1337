@@ -28,7 +28,9 @@ try {
 date_default_timezone_set('Europe/Amsterdam');
 
 include('./helpers/time.php');
+include('./helpers/jwt.php');
 include('./helpers/users.php');
+include('./helpers/accounts.php');
 include('./helpers/leaderboard.php');
 include('./helpers/statistics.php');
 include('./helpers/achievements.php');
@@ -181,6 +183,154 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 			]);
 		}
 		break;
+	// case 'testAccountHas':
+	// 	if (!isset($_GET["name"])) {
+	// 		print json_encode([
+	// 			'status' => 'error',
+	// 		]);
+	// 		return;
+	// 	}
+	// 	$name = htmlspecialchars($_GET["name"]);
+	// 	print json_encode([
+	// 		'data' => hasAccount($name),
+	// 	]);
+	// 	break;
+	case 'testAccountRegister':
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$data = json_decode(file_get_contents('php://input'), true);
+			if (!isset($data["username"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `username`',
+				]);
+				return;
+			}
+			if (!isset($data["email"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `email`',
+				]);
+				return;
+			}
+			if (!isset($data["password"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `password`',
+				]);
+				return;
+			}
+			if (!isset($data["appid"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `appid`',
+				]);
+				return;
+			}
+			$username = htmlspecialchars($data['username']);
+			$email = htmlspecialchars($data['email']);
+			$password = htmlspecialchars($data['password']);
+			$appid = htmlspecialchars($data['appid']);
+			$register = registerAccount($username, $email, $password, $appid);
+			if ($register['status'] == 'ok') {
+				$login = loginAccount($email, $password, $appid);
+				if ($login == 'error') {
+					print json_encode([
+						'status' => 'error',
+						'message' => 'login failed',
+					]);
+					return;
+				}
+				print json_encode([
+					'data' => $login,
+				]);
+				return;
+			}
+			print json_encode([
+				'data' => $register,
+			]);
+		} else {
+			http_response_code(405);
+			print json_encode([
+				'data' => ['status' => 'Method not allowed'],
+			]);
+		}
+		break;
+	case 'testAccountLogin':
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$data = json_decode(file_get_contents('php://input'), true);
+			if (!isset($data["username"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `username`',
+				]);
+				return;
+			}
+			if (!isset($data["password"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `password`',
+				]);
+				return;
+			}
+			if (!isset($data["appid"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `appid`',
+				]);
+				return;
+			}
+			$username = htmlspecialchars($data['username']);
+			$password = htmlspecialchars($data['password']);
+			$appid = htmlspecialchars($data['appid']);
+			$login = loginAccount($username, $password, $appid);
+			if ($login == 'error') {
+				print json_encode([
+					'status' => 'error',
+				]);
+				return;
+			}
+			print json_encode([
+				'data' => $login
+			]);
+		} else {
+			http_response_code(405);
+			print json_encode([
+				'data' => ['status' => 'Method not allowed'],
+			]);
+		}
+		break;
+	case 'testAccountGet':
+		$auth = getAuthData();
+		if (!$auth || !isset($_GET["name"])) {
+			print json_encode([
+				'status' => 'error',
+			]);
+			return;
+		}
+		$name = htmlspecialchars($_GET["name"]);
+		print json_encode([
+			'data' => getAccount($name),
+		]);
+		break;
+	case 'testAccountDelete':
+		$auth = getAuthData();
+		if (!$auth) {
+			print json_encode([
+				'status' => 'error'
+			]);
+			return;
+		}
+		print json_encode([
+			'data' => deleteAccount('steven', 'mock-password', 'pepper'),
+		]);
+		break;
 	case 'test':
 		$username = filter_input(INPUT_GET, 'user', FILTER_UNSAFE_RAW);
 		$result = [];
@@ -211,5 +361,26 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		print json_encode([
 			'data' => 'Endpoint not found',
 		]);
+}
+
+function getAuthData() {
+	if (!isset($_SERVER["HTTP_AUTHORIZATION"]) || !preg_match("/^Bearer\s+(.*)$/", $_SERVER["HTTP_AUTHORIZATION"], $matches)) {
+		http_response_code(401);
+		echo json_encode(["message" => "incorrect authorization header"]);
+		return false;
+	}
+	try {
+		$data = jwtDecode($matches[1]);
+	} catch (Exception $exception) {
+		http_response_code(401);
+		echo json_encode(["message" => $exception->getMessage()]);
+		return false;
+	}
+	if (isset($data['expire_date']) && $data['expire_date'] < date('Y-m-d H:i:s')) {
+		http_response_code(401);
+		echo json_encode(["message" => "session expired"]);
+		return false;
+	}
+	return $data;
 }
 ?>

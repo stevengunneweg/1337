@@ -118,7 +118,7 @@ async function submit(event: Event) {
 	event.preventDefault();
 	ApiService.postEntry(username.value)
 		.then((response) => {
-			if (!response.data.data.time.includes('13:37')) {
+			if (response.data.data.time && !response.data.data.time.includes('13:37')) {
 				if (response.data.data.time?.substr(0, 5) < '13:37') {
 					feedbackError.value = `You were too early<br/>posted at <span class="font-bold">${response.data.data.time}</span>`;
 				} else {

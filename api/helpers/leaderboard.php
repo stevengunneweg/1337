@@ -92,6 +92,9 @@ function registerPost($name) {
 	global $isDevelop;
 	global $dbh;
 
+	// $_time = '2025-01-17 13:37:01.598051';
+	$_time = getCurrentServerTime();
+
 	if (strlen($name) > 20) {
 		return ['status' => 'Name is too long'];
 	} else if (strlen($name) < 2) {
@@ -101,10 +104,7 @@ function registerPost($name) {
 	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
 		return ['status' => 'You need to wait 20 after your previous post'];
 	}
-
-	$_time = getCurrentServerTime();
-
-	// $_time = '2025-01-17 13:37:01.598051';
+	// @TODO: check if logged in
 
 	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
 	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
