@@ -64,7 +64,6 @@ function loginAccount($email, $password, $pepper) {
 		if ($existingUser && $existingUser['id'] > 0) {
 			// Test password match
 			if (password_verify($pepper._encodePassword($password), $existingUser['password'])) {
-				echo "VAlid???";
 				$statement = $dbh->prepare('UPDATE accounts SET last_login = :date WHERE id = :id');
 				$statement->execute(array(
 					':id' => $existingUser['id'],
@@ -74,6 +73,7 @@ function loginAccount($email, $password, $pepper) {
 				$jwtPayload = [
 					"id" => $existingUser['id'],
 					"email" => $existingUser["email"],
+					"issue_date" => date('Y-m-d H:i:s'),
 				];
 				return [
 					'token' => jwtEncode($jwtPayload),
@@ -160,12 +160,15 @@ function deleteAccount($email, $password, $pepper) {
 				'message' => 'account does not exist',
 			];
 		}
-
-		$id = 1;
+		$statement = $dbh->prepare('SELECT id, email, password, blocked, deleted FROM accounts WHERE email = :email AND blocked <> 1 AND deleted <> 1');
+		$statement->execute(array(
+			':email' => $email,
+		));
+		$existingUser = $statement->fetch();
 		if (password_verify($pepper._encodePassword($password), $existingUser['password'])) {
 			$statement = $dbh->prepare('UPDATE accounts SET deleted = 1 WHERE id = :id');
 			$statement->execute(array(
-				':id' => $id,
+				':id' => $existingUser['id'],
 			));
 			return [
 				'status' => 'ok',

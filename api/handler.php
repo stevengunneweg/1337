@@ -222,21 +222,13 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 				]);
 				return;
 			}
-			if (!isset($data["appid"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `appid`',
-				]);
-				return;
-			}
 			$username = htmlspecialchars($data['username']);
 			$email = htmlspecialchars($data['email']);
 			$password = htmlspecialchars($data['password']);
-			$appid = htmlspecialchars($data['appid']);
-			$register = registerAccount($username, $email, $password, $appid);
+			$passwordPepper = $env['PASSWORD_PEPPER'];
+			$register = registerAccount($username, $email, $password, $passwordPepper);
 			if ($register['status'] == 'ok') {
-				$login = loginAccount($email, $password, $appid);
+				$login = loginAccount($email, $password, $passwordPepper);
 				if ($login == 'error') {
 					print json_encode([
 						'status' => 'error',
@@ -262,11 +254,11 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 	case 'testAccountLogin':
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$data = json_decode(file_get_contents('php://input'), true);
-			if (!isset($data["username"])) {
+			if (!isset($data["email"])) {
 				http_response_code(400);
 				print json_encode([
 					'status' => 'error',
-					'message' => 'missing property `username`',
+					'message' => 'missing property `email`',
 				]);
 				return;
 			}
@@ -278,18 +270,10 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 				]);
 				return;
 			}
-			if (!isset($data["appid"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `appid`',
-				]);
-				return;
-			}
-			$username = htmlspecialchars($data['username']);
+			$email = htmlspecialchars($data['email']);
 			$password = htmlspecialchars($data['password']);
-			$appid = htmlspecialchars($data['appid']);
-			$login = loginAccount($username, $password, $appid);
+			$passwordPepper = $env['PASSWORD_PEPPER'];
+			$login = loginAccount($email, $password, $passwordPepper);
 			if ($login == 'error') {
 				print json_encode([
 					'status' => 'error',
@@ -320,16 +304,39 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		]);
 		break;
 	case 'testAccountDelete':
-		$auth = getAuthData();
-		if (!$auth) {
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$auth = getAuthData();
+			if (!$auth) {
+				print json_encode([
+					'status' => 'error'
+				]);
+				return;
+			}
+			$data = json_decode(file_get_contents('php://input'), true);
+			if (!isset($data["email"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `email`',
+				]);
+				return;
+			}
+			if (!isset($data["password"])) {
+				http_response_code(400);
+				print json_encode([
+					'status' => 'error',
+					'message' => 'missing property `password`',
+				]);
+				return;
+			}
+			$email = htmlspecialchars($data['email']);
+			$password = htmlspecialchars($data['password']);
+			$passwordPepper = $env['PASSWORD_PEPPER'];
+
 			print json_encode([
-				'status' => 'error'
+				'data' => deleteAccount($email, $password, $passwordPepper),
 			]);
-			return;
 		}
-		print json_encode([
-			'data' => deleteAccount('steven', 'mock-password', 'pepper'),
-		]);
 		break;
 	case 'test':
 		$username = filter_input(INPUT_GET, 'user', FILTER_UNSAFE_RAW);
