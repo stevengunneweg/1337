@@ -27,6 +27,9 @@ try {
 
 date_default_timezone_set('Europe/Amsterdam');
 
+include('./validators/email.php');
+include('./validators/password.php');
+include('./validators/username.php');
 include('./helpers/time.php');
 include('./helpers/jwt.php');
 include('./helpers/users.php');
@@ -198,33 +201,21 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 	case 'testAccountRegister':
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$data = json_decode(file_get_contents('php://input'), true);
-			if (!isset($data["username"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `username`',
-				]);
+			$usernameValue = $data['username'] ?? '';
+			$emailValue = $data['email'] ?? '';
+			$passwordValue = $data['password'] ?? '';
+
+			$usernameError = _isValidUsername($usernameValue);
+			$emailError = _isValidEmail($emailValue);
+			$passwordError = _isValidPassword($passwordValue);
+			if ($usernameError || $emailError || $passwordError) {
+				print json_encode($usernameError ?? $emailError ?? $passwordError);
 				return;
 			}
-			if (!isset($data["email"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `email`',
-				]);
-				return;
-			}
-			if (!isset($data["password"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `password`',
-				]);
-				return;
-			}
-			$username = htmlspecialchars($data['username']);
-			$email = htmlspecialchars($data['email']);
-			$password = htmlspecialchars($data['password']);
+
+			$username = htmlspecialchars($usernameValue);
+			$email = htmlspecialchars($emailValue);
+			$password = htmlspecialchars($passwordValue);
 			$passwordPepper = $env['PASSWORD_PEPPER'];
 			$register = registerAccount($username, $email, $password, $passwordPepper);
 			if ($register['status'] == 'ok') {
@@ -254,24 +245,18 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 	case 'testAccountLogin':
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$data = json_decode(file_get_contents('php://input'), true);
-			if (!isset($data["email"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `email`',
-				]);
+			$emailValue = $data['email'] ?? '';
+			$passwordValue = $data['password'] ?? '';
+
+			$emailError = _isValidEmail($emailValue);
+			$passwordError = _isValidPassword($passwordValue);
+			if ($emailError || $passwordError) {
+				print json_encode($emailError ?? $passwordError);
 				return;
 			}
-			if (!isset($data["password"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `password`',
-				]);
-				return;
-			}
-			$email = htmlspecialchars($data['email']);
-			$password = htmlspecialchars($data['password']);
+
+			$email = htmlspecialchars($emailValue);
+			$password = htmlspecialchars($passwordValue);
 			$passwordPepper = $env['PASSWORD_PEPPER'];
 			$login = loginAccount($email, $password, $passwordPepper);
 			if ($login == 'error') {
@@ -292,13 +277,16 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		break;
 	case 'testAccountGet':
 		$auth = getAuthData();
-		if (!$auth || !isset($_GET["name"])) {
+		$usernameValue = $_GET['username'] ?? '';
+
+		if (!$auth || !$usernameValue) {
 			print json_encode([
 				'status' => 'error',
 			]);
 			return;
 		}
-		$name = htmlspecialchars($_GET["name"]);
+
+		$name = htmlspecialchars($usernameValue);
 		print json_encode([
 			'data' => getAccount($name),
 		]);
@@ -307,30 +295,25 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$auth = getAuthData();
 			if (!$auth) {
+				http_response_code(400);
 				print json_encode([
 					'status' => 'error'
 				]);
 				return;
 			}
 			$data = json_decode(file_get_contents('php://input'), true);
-			if (!isset($data["email"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `email`',
-				]);
+			$emailValue = $data['email'] ?? '';
+			$passwordValue = $data['password'] ?? '';
+
+			$emailError = _isValidEmail($emailValue);
+			$passwordError = _isValidPassword($passwordValue);
+			if ($emailError || $passwordError) {
+				print json_encode($emailError ?? $passwordError);
 				return;
 			}
-			if (!isset($data["password"])) {
-				http_response_code(400);
-				print json_encode([
-					'status' => 'error',
-					'message' => 'missing property `password`',
-				]);
-				return;
-			}
-			$email = htmlspecialchars($data['email']);
-			$password = htmlspecialchars($data['password']);
+			
+			$email = htmlspecialchars($emailValue);
+			$password = htmlspecialchars($passwordValue);
 			$passwordPepper = $env['PASSWORD_PEPPER'];
 
 			print json_encode([

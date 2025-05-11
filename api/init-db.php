@@ -50,7 +50,7 @@ if ($env['VITE_ENVIRONMENT'] == 'local') {
 	$dbh->prepare('CREATE TABLE IF NOT EXISTS "accounts" (
 		"id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
 		"username" TEXT,
-		"email" TEXT,
+		"email" TEXT UNIQUE,
 		"password" TEXT,
 		"created_at" TEXT,
 		"last_login" TEXT,
@@ -61,7 +61,7 @@ if ($env['VITE_ENVIRONMENT'] == 'local') {
 	$dbh->prepare('CREATE TABLE IF NOT EXISTS accounts (
 		id INT PRIMARY KEY AUTO_INCREMENT NOT NULL,
 		username VARCHAR(255),
-		email VARCHAR(255),
+		email VARCHAR(255) UNIQUE,
 		password VARCHAR(255),
 		created_at VARCHAR(255),
 		last_login VARCHAR(255),
@@ -69,4 +69,6 @@ if ($env['VITE_ENVIRONMENT'] == 'local') {
 		"deleted" BOOLEAN DEFAULT false
 	)')->execute();
 }
+
+echo 'Initialized database successfully.';
 ?>
