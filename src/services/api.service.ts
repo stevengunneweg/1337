@@ -60,18 +60,48 @@ export class ApiService {
 
 	static async getActiveUsers(username: string) {
 		const response = await axios.get(
-			`${ApiService.endpoint}/handler.php?action=users&name=${username}`,
+			`${ApiService.endpoint}/handler.php?action=users&name=${encodeURIComponent(username)}`,
 		);
 		return response.data.data.activeUsers;
 	}
 
 	static async postEntry(username: string) {
-		return axios.post(`${ApiService.endpoint}/handler.php?action=post`, {
-			name: username,
-		});
+		const token = localStorage.getItem('authToken');
+		if (token) {
+		}
+		return axios.post(
+			`${ApiService.endpoint}/handler.php?action=post`,
+			{
+				name: username,
+			},
+			{
+				...(token
+					? {
+							headers: { Authorization: `Bearer ${token}` },
+						}
+					: {}),
+			},
+		);
 	}
 
 	static async getUserStats(username: string) {
 		return axios.get(`${ApiService.endpoint}/handler.php?action=stats&user=${username}`);
+	}
+
+	static async login(email: string, password: string) {
+		return axios.post(`${ApiService.endpoint}/handler.php?action=testAccountLogin`, {
+			email,
+			password,
+		});
+	}
+
+	static async getAccount(email: string) {
+		const token = localStorage.getItem('authToken');
+		return axios.get(
+			`${ApiService.endpoint}/handler.php?action=testAccountGet&email=${encodeURIComponent(email)}`,
+			{
+				headers: { Authorization: `Bearer ${token}` },
+			},
+		);
 	}
 }

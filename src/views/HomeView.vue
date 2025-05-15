@@ -34,6 +34,13 @@ const leaderboardData = {
 const isTimeVisible = ref(true);
 const isTimeLeet = ref(false);
 let leaderboardDebounce: NodeJS.Timeout | undefined;
+const isLoginOpen = ref(false);
+const isLoggedIn = ref(!!localStorage.getItem('authToken'));
+const loginFeedbackError = ref('');
+const loginData = ref({
+	email: '',
+	password: '',
+});
 
 watch(leaderboardVisible, (value) => {
 	if (!leaderboards.value[value]) {
@@ -51,7 +58,15 @@ watch(leaderboardVisible, (value) => {
 });
 
 onMounted(() => {
-	username.value = localStorage.getItem('username') || '';
+	if (isLoggedIn.value) {
+		ApiService.getAccount('stevengunneweg@gmail.com').then((response) => {
+			if (response.data.data.username) {
+				username.value = response.data.data.username;
+			}
+		});
+	} else {
+		username.value = localStorage.getItem('username') || '';
+	}
 
 	if (AllowedLeaderboardOptions.includes(route.query.leaderboard as LeaderboardOptions)) {
 		leaderboardVisible.value = route.query.leaderboard as LeaderboardOptions;
@@ -129,12 +144,46 @@ async function submit(event: Event) {
 			}
 		})
 		.catch((error) => {
-			feedbackError.value = error.response.data.data.status;
+			feedbackError.value = error.response.data.data?.status;
 		});
 }
 
 async function getLeaderboard(period?: LeaderboardOptions) {
 	leaderboards.value[period || 'default'] = await ApiService.getLeaderboard(period);
+}
+
+function login(event?: Event) {
+	event?.preventDefault();
+	ApiService.login(loginData.value.email, loginData.value.password)
+		.then((response) => {
+			if (response.data.data.token) {
+				localStorage.setItem('authToken', response.data.data.token);
+				isLoggedIn.value = true;
+				loginData.value.email = '';
+				loginData.value.password = '';
+				loginFeedbackError.value = '';
+				isLoginOpen.value = false;
+
+				ApiService.getAccount('stevengunneweg@gmail.com').then((response) => {
+					if (response.data.data.username) {
+						username.value = response.data.data.username;
+					}
+				});
+			} else {
+				console.log('login non success', response);
+				loginFeedbackError.value = response.data.message;
+			}
+		})
+		.catch((error) => {
+			console.log('login error', error.response.data);
+			loginFeedbackError.value = error.response.data.message;
+		});
+}
+
+function logout() {
+	username.value = localStorage.getItem('username') || '';
+	localStorage.removeItem('authToken');
+	isLoggedIn.value = false;
 }
 </script>
 
@@ -161,10 +210,23 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 								<div class="flex w-full justify-between gap-2">
 									<RouterLink
 										class="text-secondary-500 dark:text-secondary-100 outline-secondary-500 dark:outline-secondary-100 max-w-[calc(100%-140px)] overflow-hidden rounded text-ellipsis whitespace-nowrap underline outline-0 transition-all focus:outline-2 focus:outline-offset-1"
-										:to="'/stats/' + entry.name"
-										:title="entry.name"
+										:to="
+											'/stats/' +
+											encodeURIComponent(entry.username || entry.name)
+										"
+										:title="entry.username || entry.name"
 									>
-										{{ entry.name }}
+										<span
+											v-if="entry.username && entry.username !== entry.name"
+										>
+											{{ entry.username }}
+											<span class="text-sm line-through">
+												({{ entry.name }})
+											</span>
+										</span>
+										<span v-else>
+											{{ entry.name }}
+										</span>
 									</RouterLink>
 									<div>
 										{{ entry.time.substr(11) }}
@@ -190,7 +252,7 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 							<div v-for="user of activeUsers" :key="user">
 								<RouterLink
 									class="outline-secondary-500 dark:outline-secondary-100 max-w-[calc(100%-140px)] overflow-hidden rounded text-ellipsis whitespace-nowrap underline outline-0 transition-all focus:outline-2 focus:outline-offset-1"
-									:to="'/stats/' + user"
+									:to="'/stats/' + encodeURIComponent(user)"
 									:title="user"
 								>
 									{{ user }}
@@ -226,14 +288,61 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 								online
 							</div>
 						</div>
-						<input
-							placeholder="name"
-							v-model="username"
-							v-on:input="updateName()"
-							maxlength="20"
-							tabindex="1"
-							class="border-ui-900 dark:border-ui-100 outline-primary-500 rounded border p-2 py-1.5 text-center text-4xl text-black outline-0 transition-all focus:outline-2 focus:outline-offset-2 lg:text-5xl dark:text-white"
-						/>
+						<div class="w-full">
+							<input
+								placeholder="name"
+								v-model="username"
+								maxlength="20"
+								tabindex="1"
+								class="border-ui-900 dark:border-ui-100 outline-primary-500 w-full rounded border p-2 py-1.5 text-center text-4xl text-black outline-0 transition-all focus:outline-2 focus:outline-offset-2 disabled:opacity-35 lg:text-5xl dark:text-white"
+								:disabled="isLoggedIn"
+								v-on:input="updateName()"
+							/>
+							<div class="relative flex justify-end">
+								<button
+									v-if="!isLoggedIn"
+									class="cursor-pointer underline"
+									type="button"
+									@click="isLoginOpen = !isLoginOpen"
+								>
+									Login
+								</button>
+								<button
+									v-if="isLoggedIn"
+									type="button"
+									class="cursor-pointer"
+									@click="logout()"
+								>
+									Logout
+								</button>
+								<form
+									v-if="isLoginOpen"
+									class="bg-tertiary-100 dark:bg-ui-800 absolute top-full z-10 flex w-full flex-col gap-2 p-4 shadow-lg"
+									v-on:submit="login($event)"
+								>
+									<div class="flex flex-col items-start">
+										<label>Email</label>
+										<input
+											class="border-ui-900 dark:bg-ui-700 dark:border-ui-100 outline-primary-500 w-full rounded border bg-white p-2 py-1.5 text-center text-black outline-0 transition-all focus:outline-2 focus:outline-offset-2 dark:text-white"
+											type="email"
+											v-model="loginData.email"
+										/>
+									</div>
+									<div class="flex flex-col items-start">
+										<label>Password</label>
+										<input
+											class="border-ui-900 dark:bg-ui-700 dark:border-ui-100 outline-primary-500 w-full rounded border bg-white p-2 py-1.5 text-center text-black outline-0 transition-all focus:outline-2 focus:outline-offset-2 dark:text-white"
+											type="password"
+											v-model="loginData.password"
+										/>
+									</div>
+									<button type="submit" class="cursor-pointer">Login</button>
+									<span v-if="loginFeedbackError" class="text-error-500">
+										{{ loginFeedbackError }}
+									</span>
+								</form>
+							</div>
+						</div>
 						<button
 							class="border-ui-900 dark:border-ui-100 bg-ui-100 hover:bg-ui-200 dark:bg-ui-800 dark:hover:bg-ui-700 font-alarm outline-primary-500 cursor-pointer rounded border pt-6 pr-6 pb-4 pl-2 text-7xl text-black outline-0 transition-all focus:outline-2 focus:outline-offset-2 lg:text-8xl dark:text-white"
 							tabindex="2"
@@ -353,10 +462,23 @@ async function getLeaderboard(period?: LeaderboardOptions) {
 								<div class="flex w-full justify-between gap-2">
 									<RouterLink
 										class="text-secondary-500 dark:text-secondary-100 outline-secondary-500 dark:outline-secondary-100 max-w-[calc(100%-140px)] overflow-hidden rounded text-ellipsis whitespace-nowrap underline outline-0 transition-all focus:outline-2 focus:outline-offset-1"
-										:to="'/stats/' + entry.name"
-										:title="entry.name"
+										:to="
+											'/stats/' +
+											encodeURIComponent(entry.username || entry.name)
+										"
+										:title="entry.username || entry.name"
 									>
-										{{ entry.name }}
+										<span
+											v-if="entry.username && entry.username !== entry.name"
+										>
+											{{ entry.username }}
+											<span class="text-sm line-through">
+												({{ entry.name }})
+											</span>
+										</span>
+										<span v-else>
+											{{ entry.name }}
+										</span>
 									</RouterLink>
 									<div>
 										{{ entry.time.substr(11) }}

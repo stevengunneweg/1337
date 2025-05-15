@@ -70,5 +70,13 @@ if ($env['VITE_ENVIRONMENT'] == 'local') {
 	)')->execute();
 }
 
+if ($env['VITE_ENVIRONMENT'] == 'local') {
+	// $dbh->prepare('ALTER TABLE "listing" ADD COLUMN "userId" INTEGER')->execute();
+} else {
+	// $dbh->prepare('ALTER TABLE "listing" ADD COLUMN IF NOT EXISTS "userId" INT')->execute();
+}
+
+
+
 echo 'Initialized database successfully.';
 ?>

@@ -3,7 +3,7 @@ function getLeaderboard($span = 'today') {
 	global $dbh;
 	global $env;
 
-	$select = "SELECT name, time, SUBSTRING_INDEX(time, ' ', 1) AS day, SUBSTRING_INDEX(time, ' ', -1) AS moment FROM listing ";
+	$select = "SELECT name, userId, time, SUBSTRING_INDEX(time, ' ', 1) AS day, SUBSTRING_INDEX(time, ' ', -1) AS moment FROM listing ";
 	$isLeet = " AND (HOUR(time) = 13 AND MINUTE(time) = 37) ";
 	$order = " ORDER BY moment ASC LIMIT 30";
 
@@ -15,15 +15,15 @@ function getLeaderboard($span = 'today') {
 	$queryTop = $select."WHERE deleted IS NULL AND true".$isLeet.$order;
 
 	if ($env['VITE_ENVIRONMENT'] == 'local') {
-		$select = "SELECT name, time, date(time) as day, substr(time, 12) as moment FROM listing ";
+		$select = "SELECT listing.name, listing.time, date(listing.time) as day, substr(listing.time, 12) as moment, A.username FROM listing LEFT JOIN accounts A ON listing.userId = A.id ";
 		$isLeet = " AND ((CAST(substr(time, 12, 2) as INTEGER) = 13 AND CAST(substr(time, 15, 2) as INTEGER) = 37)) ";
 
-		$queryDay = $select." WHERE deleted IS NULL AND date(time) = date('now') ".$isLeet.$order;
-		$queryYesterday = $select." WHERE deleted IS NULL AND date(time) = date('now','-1 day') ".$isLeet.$order;
-		$queryWeek = $select." WHERE deleted IS NULL AND strftime('%W', time) = strftime('%W', date('now')) AND strftime('%Y', time) = strftime('%Y', date('now')) ".$isLeet.$order;
-		$queryMonth = $select." WHERE deleted IS NULL AND strftime('%m', time) = strftime('%m', date('now')) AND strftime('%Y', time) = strftime('%Y', date('now')) ".$isLeet.$order;
-		$queryYear = $select." WHERE deleted IS NULL AND strftime('%Y', time) = strftime('%Y', date('now')) ".$isLeet.$order;
-		$queryTop = $select." WHERE deleted IS NULL AND true ".$isLeet.$order;
+		$queryDay = $select." WHERE listing.deleted IS NULL AND date(listing.time) = date('now') ".$isLeet.$order;
+		$queryYesterday = $select." WHERE listing.deleted IS NULL AND date(listing.time) = date('now','-1 day') ".$isLeet.$order;
+		$queryWeek = $select." WHERE listing.deleted IS NULL AND strftime('%W', listing.time) = strftime('%W', date('now')) AND strftime('%Y', listing.time) = strftime('%Y', date('now')) ".$isLeet.$order;
+		$queryMonth = $select." WHERE listing.deleted IS NULL AND strftime('%m', listing.time) = strftime('%m', date('now')) AND strftime('%Y', listing.time) = strftime('%Y', date('now')) ".$isLeet.$order;
+		$queryYear = $select." WHERE listing.deleted IS NULL AND strftime('%Y', listing.time) = strftime('%Y', date('now')) ".$isLeet.$order;
+		$queryTop = $select." WHERE listing.deleted IS NULL AND true ".$isLeet.$order;
 	}
 
 	$query = $queryDay;
@@ -94,20 +94,45 @@ function registerPost($name) {
 
 	// $_time = '2025-01-17 13:37:01.598051';
 	$_time = getCurrentServerTime();
+	
+	$hasAccount = hasAccountForUsername($name);
+	if ($hasAccount) {
+		$auth = getAuthData();
+	} else {
+		$auth = [];
+	}
+	$account = getAccount($auth['email'] ?? '');
 
 	if (strlen($name) > 20) {
 		return ['status' => 'Name is too long'];
 	} else if (strlen($name) < 2) {
 		return ['status' => 'Name is too short'];
-	} else if (strpos($_SERVER['HTTP_REFERER'], '1337online.com') == false && (!$isDevelop || strpos($_SERVER['HTTP_REFERER'], 'localhost') == false)) {
+	} else if (strpos($_SERVER['HTTP_REFERER'] ?? '', '1337online.com') == false && (!$isDevelop || strpos($_SERVER['HTTP_REFERER'] ?? '', 'localhost') == false)) {
 		return ['status' => 'You sneaky boy...'];
-	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'])) {
+	} else if ($hasAccount && !$auth) {
+		return ['status' => 'You need to log in to post'];
+	} else if ($hasAccount && $account['username'] != $name) {
+		return ['status' => 'This username does not belong to you'];
+	} else if (hasRecordToday($_SERVER['REMOTE_ADDR'] ?? '')) {
 		return ['status' => 'You need to wait 20 after your previous post'];
 	}
-	// @TODO: check if logged in
 
-	$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
-	$stmt->execute(array(':name'=>$name, ':time'=>$_time, ':ip'=>$_SERVER['REMOTE_ADDR']));
+	if ($hasAccount && $auth) {
+		$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip, userId) VALUES (:name, :time, :ip, :userId)');
+		$stmt->execute(array(
+			':name'=>$name,
+			':time'=>$_time,
+			':ip'=>$_SERVER['REMOTE_ADDR'],
+			':userId'=>$auth['id'],
+		));
+	} else {
+		$stmt = $dbh->prepare('INSERT INTO listing (name, time, ip) VALUES (:name, :time, :ip)');
+		$stmt->execute(array(
+			':name'=>$name,
+			':time'=>$_time,
+			':ip'=>$_SERVER['REMOTE_ADDR'],
+		));
+	}
 	return [
 		'status' => 'ok',
 		'time' => substr($_time, 11),

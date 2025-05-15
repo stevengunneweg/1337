@@ -143,7 +143,7 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 	case 'post':
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 			$data = json_decode(file_get_contents('php://input'), true);
-			$name = htmlspecialchars($data['name']);
+			$name = htmlspecialchars($data['name'] ?? '');
 			$result = registerPost($name);
 
 			if ($result['status'] !== 'ok') {
@@ -277,19 +277,51 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 		break;
 	case 'testAccountGet':
 		$auth = getAuthData();
-		$usernameValue = $_GET['username'] ?? '';
+		$emailValue = $_GET['email'] ?? '';
 
-		if (!$auth || !$usernameValue) {
-			print json_encode([
+		$emailError = _isValidEmail($emailValue);
+		if (!$auth || $emailError) {
+			print json_encode($emailError ?? [
 				'status' => 'error',
 			]);
 			return;
 		}
 
-		$name = htmlspecialchars($usernameValue);
+		$email = htmlspecialchars($emailValue);
 		print json_encode([
-			'data' => getAccount($name),
+			'data' => getAccount($email),
 		]);
+		break;
+	case 'testAccountUpdateUsername':
+		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+			$data = json_decode(file_get_contents('php://input'), true);
+			$usernameValue = $data['username'] ?? '';
+
+			$usernameError = _isValidUsername($usernameValue);
+			if ($usernameError) {
+				print json_encode($usernameError);
+				return;
+			}
+
+			$username = htmlspecialchars($usernameValue);
+			$auth = getAuthData();
+			if (!$auth || !$usernameValue) {
+				print json_encode([
+					'status' => 'error',
+				]);
+				return;
+			}
+			$email = htmlspecialchars($auth['email'] ?? '');
+
+			print json_encode([
+				'data' => updateUsername($username, $email),
+			]);
+		} else {
+			http_response_code(405);
+			print json_encode([
+				'data' => ['status' => 'Method not allowed'],
+			]);
+		}
 		break;
 	case 'testAccountDelete':
 		if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -311,7 +343,7 @@ switch (filter_input(INPUT_GET, 'action', FILTER_UNSAFE_RAW)) {
 				print json_encode($emailError ?? $passwordError);
 				return;
 			}
-			
+
 			$email = htmlspecialchars($emailValue);
 			$password = htmlspecialchars($passwordValue);
 			$passwordPepper = $env['PASSWORD_PEPPER'];
